@@ -73,7 +73,10 @@ elif task =='e3c':
     dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
     dataset_format_converter = DatasetFormatConverter(dataset)
     dataset_format_converter.apply()
+    
     ds = dataset_format_converter.dataset
+    ds = ds.rename_column("word_level_labels", "ner_tags")
+    ds = ds.rename_column("words", "tokens")
     label2id = dataset_format_converter.label2id
 else:
     raise NotImplementedError
