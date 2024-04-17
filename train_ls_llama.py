@@ -22,13 +22,6 @@ LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 use_e3c = False
 
-wandb.login(key = WANDB_KEY)
-run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
-                  name=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                  config={'model': BASE_MODEL_CHECKPOINT, 
-                          'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
-
-
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
                                           token =LLAMA_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
@@ -93,10 +86,17 @@ def tokenize_and_align_labels(examples, max_length=1024, word_column_name='words
 
 
 tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+if use_e3c:
+    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
 # tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
+
+wandb.login(key = WANDB_KEY)
+run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
+                  name=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                  config={'model': BASE_MODEL_CHECKPOINT, 
+                          'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
 
 model = LlamaForTokenClassification.from_pretrained(
     BASE_MODEL_CHECKPOINT, 
