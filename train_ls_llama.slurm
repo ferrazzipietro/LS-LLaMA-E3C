@@ -45,4 +45,4 @@ conda activate gpu_venv_lates
 
 python --version
 # !export TORCH_USE_CUDA_DSA=1
-CUDA_LAUNCH_BLOCKING=1 python train_ls_llama.py # llama_token_clf.py wnut_17 7b #
+python llama_token_clf_copy.py e3c 7b  # train_ls_llama.py # llama_token_clf.py wnut_17 7b #
