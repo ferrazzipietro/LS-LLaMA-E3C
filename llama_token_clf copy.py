@@ -12,17 +12,8 @@ from peft import get_peft_model, LoraConfig, TaskType
 from dotenv import dotenv_values
 
 from modeling_llama import LlamaForTokenClassification
-
-
-def load_ontonotesv5():
-    ret = {}
-    for split_name in ['train', 'dev', 'test']:
-        data = []
-        with open(f'./data/NER/ontonotesv5/{split_name}.jsonl', 'r') as reader:
-            for line in reader:
-                data.append(json.loads(line))
-        ret[split_name] = Dataset.from_list(data)
-    return DatasetDict(ret)
+from utils import DataPreprocessor, DatasetFormatConverter
+from modeling_llama import LlamaForTokenClassification
 
 
 if len(sys.argv) != 3:
@@ -53,9 +44,37 @@ if task == 'wnut_17':
 elif task == 'conll2003':
     ds = load_dataset("conll2003")
     label2id = {'O': 0, 'B-PER': 1, 'I-PER': 2, 'B-ORG': 3, 'I-ORG': 4, 'B-LOC': 5, 'I-LOC': 6, 'B-MISC': 7, 'I-MISC': 8}
-elif task == 'ontonotesv5':
-    ds = load_ontonotesv5()
-    label2id = {'O': 0, 'B-NORP': 1, 'B-PERSON': 2, 'B-WORK_OF_ART': 3, 'B-QUANTITY': 4, 'B-EVENT': 5, 'B-DATE': 6, 'B-TIME': 7, 'B-PERCENT': 8, 'B-LANGUAGE': 9, 'B-ORG': 10, 'B-CARDINAL': 11, 'B-LAW': 12, 'B-GPE': 13, 'B-PRODUCT': 14, 'B-LOC': 15, 'B-MONEY': 16, 'B-ORDINAL': 17, 'B-FAC': 18}
+# elif task == 'ontonotesv5':
+#     ds = load_ontonotesv5()
+#     label2id = {'O': 0, 'B-NORP': 1, 'B-PERSON': 2, 'B-WORK_OF_ART': 3, 'B-QUANTITY': 4, 'B-EVENT': 5, 'B-DATE': 6, 'B-TIME': 7, 'B-PERCENT': 8, 'B-LANGUAGE': 9, 'B-ORG': 10, 'B-CARDINAL': 11, 'B-LAW': 12, 'B-GPE': 13, 'B-PRODUCT': 14, 'B-LOC': 15, 'B-MONEY': 16, 'B-ORDINAL': 17, 'B-FAC': 18}
+elif task =='e3c':
+    WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
+    BASE_MODEL_CHECKPOINT = 'meta-llama/Llama-2-7b-chat-hf'
+    LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
+    HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
+    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
+                                            token =LLAMA_TOKEN)
+    tokenizer.pad_token = tokenizer.eos_token
+
+    DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
+    TRAIN_LAYER="en.layer1"
+    offset=False
+    instruction_on_response_format='Extract the entities contained in the text. Extract only entities contained in the text.\nReturn the result in a json format: [{"entity":"entity_name"}].'# 'Return the result in a json format.'
+    simplest_prompt=False
+    dataset_text_field="prompt"
+    preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
+                                    tokenizer)
+    dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+    dataset = dataset[TRAIN_LAYER]
+    dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
+    dataset = preprocessor.preprocess_data_one_layer(dataset, 
+                                                    instruction_on_response_format=instruction_on_response_format,
+                                                    simplest_prompt=simplest_prompt)
+    dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
+    dataset_format_converter = DatasetFormatConverter(dataset)
+    dataset_format_converter.apply()
+    ds = dataset_format_converter.dataset
+    label2id = dataset_format_converter.label2id
 else:
     raise NotImplementedError
 id2label = {v: k for k, v in label2id.items()}
@@ -135,8 +154,8 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=tokenized_ds["train"],
-    eval_dataset=tokenized_ds["test"],
+    train_dataset=tokenized_ds, #["train"],
+    eval_dataset=tokenized_ds,# ["test"],
     tokenizer=tokenizer,
     data_collator=data_collator,
     # compute_metrics=compute_metrics,
