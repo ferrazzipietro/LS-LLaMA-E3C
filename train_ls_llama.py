@@ -104,7 +104,7 @@ model = LlamaForTokenClassification.from_pretrained(
     id2label=id2label, 
     label2id=label2id,
     token = LLAMA_TOKEN,
-    load_in_4bit=True,
+    # load_in_4bit=True,
     device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
