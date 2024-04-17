@@ -10,6 +10,7 @@ from peft import get_peft_model, LoraConfig, TaskType
 from dotenv import dotenv_values
 import wandb
 import datetime
+import os
 
 from utils import DataPreprocessor, DatasetFormatConverter
 from modeling_llama import LlamaForTokenClassification
@@ -22,11 +23,12 @@ LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 use_e3c = False
 
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
                                           token =LLAMA_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 # seqeval = evaluate.load("seqeval")
-
 
 if not use_e3c:
     ds = load_dataset("wnut_17")
@@ -88,6 +90,8 @@ def tokenize_and_align_labels(examples, max_length=1024, word_column_name='words
 tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
 if use_e3c:
     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+else:
+    train_data, val_data = tokenized_ds['train'], tokenized_ds['validation']
 # tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
@@ -107,7 +111,7 @@ model = LlamaForTokenClassification.from_pretrained(
     # load_in_4bit=True,
     device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
-    )
+    ).bfloat16()
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
 model.print_trainable_parameters()
@@ -151,26 +155,16 @@ training_args = TrainingArguments(
     report_to="wandb",
 )
 
-if use_e3c:
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_data,
-        eval_dataset= val_data,
-        tokenizer=tokenizer,
-        data_collator=data_collator,
-        compute_metrics=compute_metrics,
-    )
-else:
-    trainer = Trainer(
+
+trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=tokenized_ds['train'],
-    eval_dataset= tokenized_ds['validation'],
+    train_dataset=train_data,
+    eval_dataset= val_data,
     tokenizer=tokenizer,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
-    )
+)
 
 trainer.train()
 
