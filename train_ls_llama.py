@@ -64,7 +64,7 @@ if use_e3c:
     id2label = {v: k for k, v in label2id.items()}
     label_list = list(label2id.keys())
 
-def tokenize_and_align_labels(examples, max_length=1024, word_column_name='words', labels_column_name='word_level_labels'):# , word_column_name='tokens', labels_column_name='ner_tags'):#
+def tokenize_and_align_labels(examples, max_length=24, word_column_name='words', labels_column_name='word_level_labels'):# , word_column_name='tokens', labels_column_name='ner_tags'):#
     tokenized_inputs = tokenizer(examples[word_column_name], is_split_into_words=True, padding='longest', max_length=max_length, truncation=True)
 
     labels = []
@@ -142,8 +142,8 @@ def compute_metrics(p):
 training_args = TrainingArguments(
     output_dir="my_awesome_ds_model",
     learning_rate=1e-4,
-    per_device_train_batch_size=4,
-    per_device_eval_batch_size=4,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
     num_train_epochs=3,
     weight_decay=0.01,
     evaluation_strategy="epoch",
