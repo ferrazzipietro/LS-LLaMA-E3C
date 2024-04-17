@@ -44,4 +44,4 @@ conda activate gpu_venv_lates
 # export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512'
 
 python --version
-python  train_ls_llama.py
+CUDA_VISIBLE_DEVICES=0 python unllama_seq_clf.py agnews 7b #train_ls_llama.py
