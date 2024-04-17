@@ -20,6 +20,7 @@ WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 BASE_MODEL_CHECKPOINT = 'meta-llama/Llama-2-7b-chat-hf'
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
+use_e3c = False
 
 wandb.login(key = WANDB_KEY)
 run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
@@ -33,27 +34,40 @@ tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
 tokenizer.pad_token = tokenizer.eos_token
 # seqeval = evaluate.load("seqeval")
 
-DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
-TRAIN_LAYER="en.layer1"
-offset=False
-instruction_on_response_format='Extract the entities contained in the text. Extract only entities contained in the text.\nReturn the result in a json format: [{"entity":"entity_name"}].'# 'Return the result in a json format.'
-simplest_prompt=False
-dataset_text_field="prompt"
-preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
-                                tokenizer)
-dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
-dataset = dataset[TRAIN_LAYER]
-dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-dataset = preprocessor.preprocess_data_one_layer(dataset, 
-                                                 instruction_on_response_format=instruction_on_response_format,
-                                                 simplest_prompt=simplest_prompt)
-dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
 
-dataset_format_converter = DatasetFormatConverter(dataset)
-dataset_format_converter.apply()
-label2id = dataset_format_converter.label2id
-id2label = {v: k for k, v in label2id.items()}
-label_list = list(label2id.keys())
+if not use_e3c:
+    ds = load_dataset("wnut_17")
+    label2id_ds = { "O": 0, "B-corporation": 1, "I-corporation": 2, "B-creative-work": 3, "I-creative-work": 4, "B-group": 5, "I-group": 6, "B-location": 7, "I-location": 8, "B-person": 9, "I-person": 10, "B-product": 11, "I-product": 12, }
+    id2label_ds = {v: k for k, v in label2id_ds.items()}
+    label_list_ds = list(label2id_ds.keys()) # ds["train"].features[f"ner_tags"].feature.names
+    id2label = id2label_ds
+    label2id = label2id_ds
+    label_list = label_list_ds
+    ds = ds.rename_column("ner_tags", "word_level_labels")
+    ds = ds.rename_column("tokens", "words")
+if use_e3c:
+    DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
+    TRAIN_LAYER="en.layer1"
+    offset=False
+    instruction_on_response_format='Extract the entities contained in the text. Extract only entities contained in the text.\nReturn the result in a json format: [{"entity":"entity_name"}].'# 'Return the result in a json format.'
+    simplest_prompt=False
+    dataset_text_field="prompt"
+    preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
+                                    tokenizer)
+    dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+    dataset = dataset[TRAIN_LAYER]
+    dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
+    dataset = preprocessor.preprocess_data_one_layer(dataset, 
+                                                    instruction_on_response_format=instruction_on_response_format,
+                                                    simplest_prompt=simplest_prompt)
+    dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
+
+    dataset_format_converter = DatasetFormatConverter(dataset)
+    dataset_format_converter.apply()
+    ds = dataset_format_converter.dataset
+    label2id = dataset_format_converter.label2id
+    id2label = {v: k for k, v in label2id.items()}
+    label_list = list(label2id.keys())
 
 def tokenize_and_align_labels(examples, max_length=1024, word_column_name='words', labels_column_name='word_level_labels'):# , word_column_name='tokens', labels_column_name='ner_tags'):#
     tokenized_inputs = tokenizer(examples[word_column_name], is_split_into_words=True, padding='longest', max_length=max_length, truncation=True)
@@ -137,15 +151,26 @@ training_args = TrainingArguments(
     report_to="wandb",
 )
 
-trainer = Trainer(
+if use_e3c:
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_data,
+        eval_dataset= val_data,
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+else:
+    trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=train_data,
-    eval_dataset= val_data,
+    train_dataset=tokenized_ds['train'],
+    eval_dataset= tokenized_ds['validation'],
     tokenizer=tokenizer,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
-)
+    )
 
 trainer.train()
 

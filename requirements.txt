@@ -3,3 +3,6 @@ evaluate
 numpy
 peft
 transformers==4.32.1
+python-dotenv==1.0.1
+seqeval==1.2.2
+bitsandbytes==0.43.1
