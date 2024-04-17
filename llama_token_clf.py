@@ -44,7 +44,7 @@ elif model_size == '13b':
 else:
     raise NotImplementedError
 tokenizer = AutoTokenizer.from_pretrained(model_id)
-seqeval = evaluate.load("seqeval")
+# seqeval = evaluate.load("seqeval")
 if task == 'wnut_17':
     ds = load_dataset("wnut_17")
     label2id = { "O": 0, "B-corporation": 1, "I-corporation": 2, "B-creative-work": 3, "I-creative-work": 4, "B-group": 5, "I-group": 6, "B-location": 7, "I-location": 8, "B-person": 9, "I-person": 10, "B-product": 11, "I-product": 12, }
@@ -92,26 +92,26 @@ tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
 
-def compute_metrics(p):
-    predictions, labels = p
-    predictions = np.argmax(predictions, axis=2)
+# def compute_metrics(p):
+#     predictions, labels = p
+#     predictions = np.argmax(predictions, axis=2)
 
-    true_predictions = [
-        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
-    true_labels = [
-        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
+#     true_predictions = [
+#         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
+#     true_labels = [
+#         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
 
-    results = seqeval.compute(predictions=true_predictions, references=true_labels)
-    return {
-        "precision": results["overall_precision"],
-        "recall": results["overall_recall"],
-        "f1": results["overall_f1"],
-        "accuracy": results["overall_accuracy"],
-    }
+#     results = seqeval.compute(predictions=true_predictions, references=true_labels)
+#     return {
+#         "precision": results["overall_precision"],
+#         "recall": results["overall_recall"],
+#         "f1": results["overall_f1"],
+#         "accuracy": results["overall_accuracy"],
+#     }
 
 
 training_args = TrainingArguments(
@@ -123,7 +123,7 @@ training_args = TrainingArguments(
     weight_decay=0.01,
     evaluation_strategy="epoch",
     save_strategy="epoch",
-    load_best_model_at_end=True,
+    # load_best_model_at_end=True,
     push_to_hub=False,
 )
 
@@ -134,7 +134,7 @@ trainer = Trainer(
     eval_dataset=tokenized_ds["test"],
     tokenizer=tokenizer,
     data_collator=data_collator,
-    compute_metrics=compute_metrics,
+    # compute_metrics=compute_metrics,
 )
 
 trainer.train()
