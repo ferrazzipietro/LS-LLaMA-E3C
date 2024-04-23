@@ -68,7 +68,7 @@ if use_e3c:
 
 
 def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=64, truncation=True)
+    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
@@ -94,10 +94,10 @@ model = LlamaForTokenClassification.from_pretrained(
     id2label=id2label, 
     label2id=label2id,
     token = LLAMA_TOKEN,
-    #load_in_4bit=True,
-    # device_map = 'auto',
+    load_in_4bit=True,
+    device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
-    ).bfloat16()
+    )# .bfloat16()
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
@@ -150,6 +150,7 @@ training_args = TrainingArguments(
     learning_rate=1e-4,
     per_device_train_batch_size=2,
     per_device_eval_batch_size=2,
+    gradient_accumulation_steps= 4,
     num_train_epochs=3,
     weight_decay=0.01,
     evaluation_strategy="epoch",
@@ -166,7 +167,7 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_data,
-    eval_dataset= val_data,
+    eval_dataset=val_data,
     tokenizer=tokenizer,
     data_collator=data_collator,
     # compute_metrics=compute_metrics,
