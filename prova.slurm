@@ -1,13 +1,13 @@
 #!/bin/bash -l
 ### job name
-#SBATCH --job-name=finetuning
+#SBATCH --job-name=prova
 
 ### 
 #SBATCH --mail-user=ferrazzi@math.unipd.it
 
 ### Standard output and standard error for our job
-#SBATCH --error=finetuning.err
-#SBATCH --output=finetuning.out
+#SBATCH --error=prova.err
+#SBATCH --output=prova.out
 
 ### queue/partition choosed
 #SBATCH --partition=testing
@@ -42,6 +42,6 @@ which python
 export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256'
 
 python --version
-python  llama_token_clf_copy.py
+python  train_ls_llama.py
 echo -n 'Date: '
 date
