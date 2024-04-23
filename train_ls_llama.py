@@ -21,25 +21,25 @@ WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 BASE_MODEL_CHECKPOINT = 'meta-llama/Llama-2-7b-chat-hf'
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
-use_e3c = False
+use_e3c = True
 
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# os.environ["TOKENIZERS_PARALLELISM"] = "false"
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
                                           token =LLAMA_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 # seqeval = evaluate.load("seqeval")
 
-if not use_e3c:
-    ds = load_dataset("wnut_17")
-    label2id_ds = { "O": 0, "B-corporation": 1, "I-corporation": 2, "B-creative-work": 3, "I-creative-work": 4, "B-group": 5, "I-group": 6, "B-location": 7, "I-location": 8, "B-person": 9, "I-person": 10, "B-product": 11, "I-product": 12, }
-    id2label_ds = {v: k for k, v in label2id_ds.items()}
-    label_list_ds = list(label2id_ds.keys()) # ds["train"].features[f"ner_tags"].feature.names
-    id2label = id2label_ds
-    label2id = label2id_ds
-    label_list = label_list_ds
-    ds = ds.rename_column("ner_tags", "word_level_labels")
-    ds = ds.rename_column("tokens", "words")
+# if not use_e3c:
+#     ds = load_dataset("wnut_17")
+#     label2id_ds = { "O": 0, "B-corporation": 1, "I-corporation": 2, "B-creative-work": 3, "I-creative-work": 4, "B-group": 5, "I-group": 6, "B-location": 7, "I-location": 8, "B-person": 9, "I-person": 10, "B-product": 11, "I-product": 12, }
+#     id2label_ds = {v: k for k, v in label2id_ds.items()}
+#     label_list_ds = list(label2id_ds.keys()) # ds["train"].features[f"ner_tags"].feature.names
+#     id2label = id2label_ds
+#     label2id = label2id_ds
+#     label_list = label_list_ds
+#     ds = ds.rename_column("ner_tags", "word_level_labels")
+#     ds = ds.rename_column("tokens", "words")
 if use_e3c:
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
@@ -60,16 +60,18 @@ if use_e3c:
     dataset_format_converter.apply()
 
     ds = dataset_format_converter.dataset
+    ds = ds.rename_column("word_level_labels", "ner_tags")
+    ds = ds.rename_column("words", "tokens")
     label2id = dataset_format_converter.label2id
     id2label = {v: k for k, v in label2id.items()}
     label_list = list(label2id.keys())
 
-def tokenize_and_align_labels(examples, max_length=24, word_column_name='words', labels_column_name='word_level_labels'):# , word_column_name='tokens', labels_column_name='ner_tags'):#
-    tokenized_inputs = tokenizer(examples[word_column_name], is_split_into_words=True, padding='longest', max_length=max_length, truncation=True)
+
+def tokenize_and_align_labels(examples):
+    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=max_length, truncation=True)
 
     labels = []
-    for i, label in enumerate(examples[labels_column_name]):
-        # print('label: ', label)
+    for i, label in enumerate(examples[f"ner_tags"]):
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
         previous_word_idx = None
         label_ids = []
@@ -79,28 +81,12 @@ def tokenize_and_align_labels(examples, max_length=24, word_column_name='words',
             elif word_idx != previous_word_idx:  # Only label the first token of a given word.
                 label_ids.append(label[word_idx])
             else:
-                label_ids.append(-99)
+                label_ids.append(-100)
             previous_word_idx = word_idx
         labels.append(label_ids)
 
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
-
-
-tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-if use_e3c:
-    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
-else:
-    train_data, val_data = tokenized_ds['train'], tokenized_ds['validation']
-# tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)
-data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
-
-
-wandb.login(key = WANDB_KEY)
-run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
-                  name=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                  config={'model': BASE_MODEL_CHECKPOINT, 
-                          'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
 
 model = LlamaForTokenClassification.from_pretrained(
     BASE_MODEL_CHECKPOINT, 
@@ -112,9 +98,29 @@ model = LlamaForTokenClassification.from_pretrained(
     # device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
     ).bfloat16()
+
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
 model.print_trainable_parameters()
+
+
+tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
+
+
+if use_e3c:
+    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+
+
+
+wandb.login(key = WANDB_KEY)
+run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
+                  name=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                  config={'model': BASE_MODEL_CHECKPOINT, 
+                          'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+
+
+
 
 # def compute_metrics(p):
 #     predictions, labels = p
@@ -148,7 +154,7 @@ training_args = TrainingArguments(
     weight_decay=0.01,
     evaluation_strategy="epoch",
     save_strategy="epoch",
-    load_best_model_at_end=True,
+    #load_best_model_at_end=True,
     push_to_hub=True,
     hub_token=HF_TOKEN,
     hub_model_id='ls_llama_e3c',
