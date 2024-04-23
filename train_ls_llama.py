@@ -68,7 +68,7 @@ if use_e3c:
 
 
 def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=max_length, truncation=True)
+    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=64, truncation=True)
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
