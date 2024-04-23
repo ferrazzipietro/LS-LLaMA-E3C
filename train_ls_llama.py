@@ -56,9 +56,9 @@ if use_e3c:
                                                     instruction_on_response_format=instruction_on_response_format,
                                                     simplest_prompt=simplest_prompt)
     dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
-
     dataset_format_converter = DatasetFormatConverter(dataset)
     dataset_format_converter.apply()
+
     ds = dataset_format_converter.dataset
     label2id = dataset_format_converter.label2id
     id2label = {v: k for k, v in label2id.items()}
@@ -111,31 +111,31 @@ model = LlamaForTokenClassification.from_pretrained(
     load_in_4bit=True,
     device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
-    ).bfloat16()
+    )# .bfloat16()
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
 model.print_trainable_parameters()
 
-def compute_metrics(p):
-    predictions, labels = p
-    predictions = np.argmax(predictions, axis=2)
+# def compute_metrics(p):
+#     predictions, labels = p
+#     predictions = np.argmax(predictions, axis=2)
 
-    true_predictions = [
-        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
-    true_labels = [
-        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
+#     true_predictions = [
+#         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
+#     true_labels = [
+#         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
 
-    results = seqeval.compute(predictions=true_predictions, references=true_labels)
-    return {
-        "precision": results["overall_precision"],
-        "recall": results["overall_recall"],
-        "f1": results["soverall_f1"],
-        "accuracy": results["overall_accuracy"],
-    }
+#     results = seqeval.compute(predictions=true_predictions, references=true_labels)
+#     return {
+#         "precision": results["overall_precision"],
+#         "recall": results["overall_recall"],
+#         "f1": results["soverall_f1"],
+#         "accuracy": results["overall_accuracy"],
+#     }
 
 
 
@@ -163,7 +163,7 @@ trainer = Trainer(
     eval_dataset= val_data,
     tokenizer=tokenizer,
     data_collator=data_collator,
-    compute_metrics=compute_metrics,
+    # compute_metrics=compute_metrics,
 )
 
 trainer.train()
