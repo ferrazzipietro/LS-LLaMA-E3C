@@ -109,7 +109,7 @@ model = LlamaForTokenClassification.from_pretrained(
     label2id=label2id,
     token = LLAMA_TOKEN,
     #load_in_4bit=True,
-    device_map = 'auto',
+    # device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
     ).bfloat16()
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
