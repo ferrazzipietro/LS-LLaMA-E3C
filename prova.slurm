@@ -42,6 +42,6 @@ which python
 export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256'
 
 python --version
-python  train_ls_llama.py
+python  llama_token_clf_copy.py
 echo -n 'Date: '
 date
