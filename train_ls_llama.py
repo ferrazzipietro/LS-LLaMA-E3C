@@ -3,12 +3,12 @@ import sys
 import numpy as np
 import evaluate
 from datasets import load_dataset, Dataset, DatasetDict
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, BitsAndBytesConfig
 from transformers import DataCollatorForTokenClassification
 from transformers import TrainingArguments, Trainer
 from peft import get_peft_model, LoraConfig, TaskType, PeftModel
 from dotenv import dotenv_values
-import wandb
+# import wandb
 import datetime
 import os
 
@@ -88,16 +88,31 @@ def tokenize_and_align_labels(examples):
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
 
+
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit= True,# model_loading_params.load_in_4bit,
+    load_in_8bit = False,#  model_loading_params.load_in_8bit,
+
+    bnb_4bit_quant_type= "nf4",
+    bnb_4bit_compute_dtype= torch.bfloat16,
+    bnb_4bit_use_double_quant= True,
+
+    # llm_int8_threshold= 6.0,# model_loading_params.llm_int8_threshold,
+    # llm_int8_skip_modules= ["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"],# model_loading_params.llm_int8_skip_modules,
+    # llm_int8_has_fp16_weight= True# model_loading_params.llm_int8_has_fp16_weight
+)
+
 model = LlamaForTokenClassification.from_pretrained(
     BASE_MODEL_CHECKPOINT, 
     num_labels=len(label2id), 
     id2label=id2label, 
     label2id=label2id,
     token = LLAMA_TOKEN,
-    load_in_4bit=True,
+    quantization_config=bnb_config,    
     device_map = 'auto',
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
-    )# .bfloat16()
+    )
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
