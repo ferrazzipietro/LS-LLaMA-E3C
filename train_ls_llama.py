@@ -8,9 +8,10 @@ from transformers import DataCollatorForTokenClassification
 from transformers import TrainingArguments, Trainer
 from peft import get_peft_model, LoraConfig, TaskType, PeftModel
 from dotenv import dotenv_values
-# import wandb
+import wandb
 import datetime
 import os
+import torch
 
 from utils import DataPreprocessor, DatasetFormatConverter
 from modeling_llama import LlamaForTokenClassification
