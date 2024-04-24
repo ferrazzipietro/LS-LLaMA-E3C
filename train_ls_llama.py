@@ -29,7 +29,7 @@ use_e3c = True
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
                                           token =LLAMA_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
-# seqeval = evaluate.load("seqeval")
+seqeval = evaluate.load("seqeval")
 
 # if not use_e3c:
 #     ds = load_dataset("wnut_17")
@@ -138,26 +138,26 @@ run = wandb.init(project='ls_llama_e3c', job_type="training", anonymous="allow",
 
 
 
-# def compute_metrics(p):
-#     predictions, labels = p
-#     predictions = np.argmax(predictions, axis=2)
+def compute_metrics(p):
+    predictions, labels = p
+    predictions = np.argmax(predictions, axis=2)
 
-#     true_predictions = [
-#         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-#         for prediction, label in zip(predictions, labels)
-#     ]
-#     true_labels = [
-#         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-#         for prediction, label in zip(predictions, labels)
-#     ]
+    true_predictions = [
+        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
+    true_labels = [
+        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
 
-#     results = seqeval.compute(predictions=true_predictions, references=true_labels)
-#     return {
-#         "precision": results["overall_precision"],
-#         "recall": results["overall_recall"],
-#         "f1": results["soverall_f1"],
-#         "accuracy": results["overall_accuracy"],
-#     }
+    results = seqeval.compute(predictions=true_predictions, references=true_labels)
+    return {
+        "precision": results["overall_precision"],
+        "recall": results["overall_recall"],
+        "f1": results["soverall_f1"],
+        "accuracy": results["overall_accuracy"],
+    }
 
 
 
@@ -187,7 +187,7 @@ trainer = Trainer(
     eval_dataset=val_data,
     tokenizer=tokenizer,
     data_collator=data_collator,
-    # compute_metrics=compute_metrics,
+    compute_metrics=compute_metrics,
 )
 
 trainer.train()

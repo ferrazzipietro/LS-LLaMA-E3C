@@ -1,0 +1,171 @@
+{
+    "os": "Linux-4.15.0-213-generic-x86_64-with-glibc2.27",
+    "python": "3.11.5",
+    "heartbeatAt": "2024-04-24T13:57:36.299126",
+    "startedAt": "2024-04-24T13:57:35.704267",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/ferrazzipietro/LS-LLaMA-E3C.git",
+        "commit": "a1d957f568a70a7cae46e651afa286bc5b8de23f"
+    },
+    "email": "ferrazzipietro@gmail.com",
+    "root": "/home/pferrazzi/LS-LLaMA-E3C",
+    "host": "hltnlp-gpu-a",
+    "username": "pferrazzi",
+    "executable": "/home/pferrazzi/LS-LLaMA-E3C/.venv/bin/python",
+    "cpu_count": 12,
+    "cpu_count_logical": 24,
+    "cpu_freq": {
+        "current": 2166.589583333334,
+        "min": 2200.0,
+        "max": 3500.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1808.719,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1986.414,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2532.323,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3322.907,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1888.369,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2148.958,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1934.665,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1895.539,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2432.66,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1885.765,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1890.936,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1890.41,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1992.519,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2146.522,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2983.638,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2683.391,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2113.745,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2065.192,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1829.708,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 1852.506,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2150.143,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2183.554,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2189.754,
+            "min": 2200.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2189.813,
+            "min": 2200.0,
+            "max": 3500.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 27.33194351196289,
+            "used": 23.168960571289062
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 2080 Ti",
+    "gpu_count": 2,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        },
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        }
+    ],
+    "memory": {
+        "total": 62.82806396484375
+    }
+}
