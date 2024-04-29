@@ -27,8 +27,8 @@ use_e3c = True
 
 # os.environ["TOKENIZERS_PARALLELISM"] = "false"
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
-                                          token =LLAMA_TOKEN,
-                                          cache_dir='/data/disk1/share/pferrazzi/.cache')
+                                          token =LLAMA_TOKEN,)
+                                          #cache_dir='/data/disk1/share/pferrazzi/.cache')
 tokenizer.pad_token = tokenizer.eos_token
 seqeval = evaluate.load("seqeval")
 
@@ -113,7 +113,7 @@ model = LlamaForTokenClassification.from_pretrained(
     token = LLAMA_TOKEN,
     quantization_config=bnb_config,    
     device_map = 'cuda:0',
-    cache_dir='/data/disk1/share/pferrazzi/.cache'
+    #cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, inference_mode=False, r=12, lora_alpha=32, lora_dropout=0.1)
