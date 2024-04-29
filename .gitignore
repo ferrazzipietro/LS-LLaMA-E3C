@@ -161,5 +161,7 @@ cython_debug/
 
 
 .env.base
+*.env.base
 .DS_Store
 *.DS_Store
+wandb/

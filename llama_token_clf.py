@@ -11,7 +11,7 @@ from transformers import TrainingArguments, Trainer
 from peft import get_peft_model, LoraConfig, TaskType
 from dotenv import dotenv_values
 
-from modeling_llama import LlamaForTokenClassification
+from src.billm.modeling_llama import LlamaForTokenClassification
 
 
 def load_ontonotesv5():

@@ -10,7 +10,7 @@ from transformers import DataCollatorForTokenClassification
 from transformers import TrainingArguments, Trainer
 from peft import get_peft_model, LoraConfig, TaskType
 
-from modeling_llama import UnmaskingLlamaForTokenClassification
+from src.billm.modeling_llama import UnmaskingLlamaForTokenClassification
 
 
 def load_ontonotesv5():
