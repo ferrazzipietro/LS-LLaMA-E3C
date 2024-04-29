@@ -1,13 +1,13 @@
 #!/bin/bash -l
 ### job name
-#SBATCH --job-name=finetuning
+#SBATCH --job-name=train_small
 
 ### 
 #SBATCH --mail-user=ferrazzi@math.unipd.it
 
 ### Standard output and standard error for our job
-#SBATCH --error=finetuning.err
-#SBATCH --output=finetuning.out
+#SBATCH --error=train_small.err
+#SBATCH --output=train_small.out
 
 ### queue/partition choosed
 #SBATCH --partition=testing
@@ -42,6 +42,6 @@ which python
 export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256'
 
 python --version
-python  train_small.py # train_ls_llama.py
+python  train_small.py
 echo -n 'Date: '
 date
