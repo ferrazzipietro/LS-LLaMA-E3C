@@ -70,7 +70,7 @@ if use_e3c:
 
 
 def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
+    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=80, truncation=True)
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
@@ -92,18 +92,18 @@ def tokenize_and_align_labels(examples):
 
 
 
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit= True,# model_loading_params.load_in_4bit,
-    load_in_8bit = False,#  model_loading_params.load_in_8bit,
+# bnb_config = BitsAndBytesConfig(
+#     load_in_4bit= True,# model_loading_params.load_in_4bit,
+#     load_in_8bit = False,#  model_loading_params.load_in_8bit,
 
-    bnb_4bit_quant_type= "nf4",
-    bnb_4bit_compute_dtype= torch.bfloat16,
-    bnb_4bit_use_double_quant= True,
+#     bnb_4bit_quant_type= "nf4",
+#     bnb_4bit_compute_dtype= torch.bfloat16,
+#     bnb_4bit_use_double_quant= True,
 
-    # llm_int8_threshold= 6.0,# model_loading_params.llm_int8_threshold,
-    # llm_int8_skip_modules= ["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"],# model_loading_params.llm_int8_skip_modules,
-    # llm_int8_has_fp16_weight= True# model_loading_params.llm_int8_has_fp16_weight
-)
+#     # llm_int8_threshold= 6.0,# model_loading_params.llm_int8_threshold,
+#     # llm_int8_skip_modules= ["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"],# model_loading_params.llm_int8_skip_modules,
+#     # llm_int8_has_fp16_weight= True# model_loading_params.llm_int8_has_fp16_weight
+# )
 
 model = LlamaForTokenClassification.from_pretrained(
     BASE_MODEL_CHECKPOINT, 
@@ -111,8 +111,8 @@ model = LlamaForTokenClassification.from_pretrained(
     id2label=id2label, 
     label2id=label2id,
     token = LLAMA_TOKEN,
-    quantization_config=bnb_config,    
-    device_map = 'cuda:0',
+    # quantization_config=bnb_config,    
+    # device_map = 'cuda:0',
     #cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
 
