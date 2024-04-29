@@ -19,7 +19,7 @@ from modeling_llama import LlamaForTokenClassification
 
 
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
-BASE_MODEL_CHECKPOINT = 'meta-llama/Llama-2-7b-chat-hf'
+BASE_MODEL_CHECKPOINT = "NousResearch/LLama-2-7b-hf" #'meta-llama/Llama-2-7b-chat-hf'
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 use_e3c = True
