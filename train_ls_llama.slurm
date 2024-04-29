@@ -37,9 +37,9 @@ echo
 SHELL=/bin/bash
 
 ### Jobs execution commands
+conda init bash
 conda activate gpu_venv_lates
 which python
-conda activate gpu_venv_lates
 
 # export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512'
 
