@@ -132,7 +132,7 @@ def main(ADAPTERS_CHECKPOINT,
         model=model,
         train_dataset=train_data,
         eval_dataset=val_data,
-        # dataset_text_field=training_params.dataset_text_field, ATTENZIONE! FORSE QUESTO FA CASINO, bisogna usare Trainer invece di SFFTrainer???
+        dataset_text_field=training_params.dataset_text_field, ATTENZIONE! FORSE QUESTO FA CASINO, bisogna usare Trainer invece di SFFTrainer???
         peft_config=lora_config,
         args=training_arguments,
         data_collator=data_collator,
