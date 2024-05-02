@@ -1,6 +1,6 @@
 ### TrainingArguments
 num_train_epochs= 3
-per_device_train_batch_size= 8
+per_device_train_batch_size= 2
 gradient_accumulation_steps= [2]# ,4]#[2,4,8] reduce the number to finish faster
 optim = "paged_adamw_8bit"
 save_steps= 1000
@@ -26,5 +26,5 @@ lr_scheduler_type= "constant"
 """
 max_seq_length= 128 # It is also used to set the maximum number of tokens to be processed by the model in the definition of DatasetFormatConverter.tokenize_and_align_labels.
 # longer sequences will be truncated
-dataset_text_field="prompt"
+dataset_text_field="labels"
 packing=False
