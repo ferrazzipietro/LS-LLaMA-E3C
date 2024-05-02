@@ -163,3 +163,5 @@ cython_debug/
 .env.base
 .DS_Store
 *.DS_Store
+ls_llama_e3c_locale/
+my_awesome_ds_model/
