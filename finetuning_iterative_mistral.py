@@ -41,12 +41,10 @@ WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 
 
-
 def main(ADAPTERS_CHECKPOINT,
          #load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold, llm_int8_skip_modules,
          r, lora_alpha, lora_dropout,
          gradient_accumulation_steps,learning_rate,
-         data_collator, 
          tokenizer):
     
     # Monitering the LLM
