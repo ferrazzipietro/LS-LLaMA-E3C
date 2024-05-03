@@ -17,15 +17,16 @@ WANDB_PROJECT_NAME = f'finetune LS-{model_name}'
 WANDB_RUN_NAME = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 from peft import TaskType
-r = [16]# [16, 32] # [16, 32, 64] reduce the number to finish faster
-lora_alpha = [32]#[32, 64] 
-lora_dropout = [0.01] # [0.05, 0.01]
+r = [16, 32, 64] # reduce the number to finish faster
+lora_alpha = [32, 64] 
+lora_dropout = [0.05, 0.01]
 bias =  "lora_only" 
 use_rslora = True
 task_type=TaskType.TOKEN_CLS
 target_modules=["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]# substituted by the function find_all_linear_names()
-torch_dtype=torch.bfloat16
 
+
+torch_dtype=torch.bfloat16
 quantization = False
 load_in_4bit=[False]
 bnb_4bit_quant_type = ["nf4"]
@@ -35,7 +36,6 @@ llm_int8_threshold = [6.0]
 bnb_4bit_use_double_quant = True
 llm_int8_has_fp16_weight = True
 llm_int8_skip_modules = ["q_proj", "k_proj", "v_proj", "o_proj","gate_proj"]
-
 
 offset=False
 instruction_on_response_format='Extract the entities contained in the text. Extract only entities contained in the text.\nReturn the result in a json format: [{"entity":"entity_name"}].'
@@ -48,7 +48,7 @@ optim = "paged_adamw_8bit"
 save_steps= 1000
 logging_strategy="steps"
 logging_steps= 10
-learning_rate= [2e-4]
+learning_rate= [5e-5, 2e-4]
 weight_decay= 0.001
 fp16= False 
 bf16= True
@@ -70,4 +70,3 @@ max_seq_length= 128 # It is also used to set the maximum number of tokens to be 
 # longer sequences will be truncated
 dataset_text_field="prompt"
 packing=False
-
