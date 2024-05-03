@@ -16,7 +16,7 @@ model = MistralForTokenClassification.from_pretrained(
     peft_config.base_model_name_or_path,
     num_labels=len(label2id), id2label=id2label, label2id=label2id,
     token = HF_TOKEN,
-    cache_dir='/data/disk1/share/pferrazzi/.cache'
+    # cache_dir='/data/disk1/share/pferrazzi/.cache'
 )
 model = PeftModel.from_pretrained(model, model_id)
 # merge_and_unload is necessary for inference
