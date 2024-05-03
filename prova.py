@@ -55,12 +55,12 @@ LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 
 adapters = "ferrazzipietro/LS_Mistral-7B-v0.1_adapters_en.layer1_NoQuant_16_32_0.01_2_0.0002"
-tokenizer = AutoTokenizer.from_pretrained(adapters,
+peft_config = PeftConfig.from_pretrained(adapters)
+BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
                                           token =HF_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 # seqeval = evaluate.load("seqeval")
-peft_config = PeftConfig.from_pretrained(adapters)
-BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
 TRAIN_LAYER="en.layer1"
 offset=False
