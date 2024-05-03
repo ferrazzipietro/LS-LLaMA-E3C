@@ -451,6 +451,7 @@ class MistralForTokenClassification(MistralPreTrainedModel):
 
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
+        # softmax_output = nn.functional.softmax(logits, dim=-1)
 
         loss = None
         if labels is not None:
