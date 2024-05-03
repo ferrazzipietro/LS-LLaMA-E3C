@@ -13,29 +13,31 @@ import datetime
 import gc
 from utils import DataPreprocessor, DatasetFormatConverter
 import numpy as np
+import evaluate
+
 
 from config.finetuning_mistral import training_params, lora_params, model_loading_params, config, preprocessing_params
 from src.billm.modeling_mistral import MistralForTokenClassification
-def compute_metrics(p):
-    predictions, labels = p
-    predictions = np.argmax(predictions, axis=2)
+# def compute_metrics(p):
+#     predictions, labels = p
+#     predictions = np.argmax(predictions, axis=2)
 
-    true_predictions = [
-        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
-    true_labels = [
-        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-        for prediction, label in zip(predictions, labels)
-    ]
+#     true_predictions = [
+#         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
+#     true_labels = [
+#         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+#         for prediction, label in zip(predictions, labels)
+#     ]
 
-    results = seqeval.compute(predictions=true_predictions, references=true_labels)
-    return {
-        "precision": results["overall_precision"],
-        "recall": results["overall_recall"],
-        "f1": results["soverall_f1"],
-        "accuracy": results["overall_accuracy"],
-    }
+#     results = seqeval.compute(predictions=true_predictions, references=true_labels)
+#     return {
+#         "precision": results["overall_precision"],
+#         "recall": results["overall_recall"],
+#         "f1": results["soverall_f1"],
+#         "accuracy": results["overall_accuracy"],
+#     }
 
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
@@ -158,7 +160,7 @@ def main(ADAPTERS_CHECKPOINT,
         # peft_config=lora_config,
         data_collator=data_collator,
         tokenizer=tokenizer,
-        compute_metrics=compute_metrics,
+        # compute_metrics=compute_metrics,
         # max_seq_length = training_params.max_seq_length
     )
 
@@ -182,6 +184,8 @@ if __name__ == "__main__":
                                             token = LLAMA_TOKEN) #, cache_dir='/data/disk1/share/pferrazzi/.cache')
     tokenizer.pad_token = tokenizer.eos_token
     # tokenizer.padding_side = 'right'
+    # seqeval = evaluate.load("seqeval")
+
 
     preprocessor = DataPreprocessor(config.BASE_MODEL_CHECKPOINT, 
                                         tokenizer)
