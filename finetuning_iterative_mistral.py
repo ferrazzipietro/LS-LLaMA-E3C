@@ -15,7 +15,26 @@ from utils import DataPreprocessor, DatasetFormatConverter
 
 from config.finetuning_mistral import training_params, lora_params, model_loading_params, config, preprocessing_params
 from src.billm.modeling_mistral import MistralForTokenClassification
+def compute_metrics(p):
+    predictions, labels = p
+    predictions = np.argmax(predictions, axis=2)
 
+    true_predictions = [
+        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
+    true_labels = [
+        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
+
+    results = seqeval.compute(predictions=true_predictions, references=true_labels)
+    return {
+        "precision": results["overall_precision"],
+        "recall": results["overall_recall"],
+        "f1": results["soverall_f1"],
+        "accuracy": results["overall_accuracy"],
+    }
 
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
@@ -42,12 +61,12 @@ def main(ADAPTERS_CHECKPOINT,
     if not model_loading_params.quantization:
         model = MistralForTokenClassification.from_pretrained(
         config.BASE_MODEL_CHECKPOINT,
-        device_map="auto",
-        token=LLAMA_TOKEN,
-        torch_dtype=model_loading_params.torch_dtype,
         num_labels=len(label2id), 
         id2label=id2label, 
         label2id=label2id,
+        device_map="auto",
+        token=LLAMA_TOKEN,
+        torch_dtype=model_loading_params.torch_dtype,
         #cache_dir='/data/disk1/share/pferrazzi/.cache'
         )
         model.gradient_checkpointing_enable() # Activates gradient checkpointing for the current model.
@@ -80,38 +99,42 @@ def main(ADAPTERS_CHECKPOINT,
         #                         3- upcasting the model's head to fp32 for numerical stability
         # """
         # model = prepare_model_for_kbit_training(model)
-    model.gradient_checkpointing_enable() # Activates gradient checkpointing for the current model.
-    model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
+    #model.gradient_checkpointing_enable() # Activates gradient checkpointing for the current model.
+    #model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 
     lora_config = LoraConfig(
+            task_type=lora_params.task_type,
+            inference_mode=False, 
             r=r,
             lora_alpha=lora_alpha,
             lora_dropout=lora_dropout,
-            bias=lora_params.bias,
-            task_type=lora_params.task_type,
-            inference_mode=False, 
-            target_modules=lora_params.target_modules # lora_params.target_modules
+            # bias=lora_params.bias,
+            #  target_modules=lora_params.target_modules # lora_params.target_modules
             )
     model = get_peft_model(model, lora_config)
-
+    data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
+    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, config.TRAIN_LAYER)
     torch.cuda.empty_cache()
 
     #Hyperparamter
     training_arguments = TrainingArguments(
         output_dir= "./training_output",
-        push_to_hub=True,
-        hub_model_id=config.FT_MODEL_CHECKPOINT,
-        hub_token=HF_TOKEN,
-        hub_private_repo=True,
-        num_train_epochs= training_params.num_train_epochs,
+        learning_rate= learning_rate,
         per_device_train_batch_size= training_params.per_device_train_batch_size,
         per_device_eval_batch_size= training_params.per_device_train_batch_size,
+        num_train_epochs= training_params.num_train_epochs,
+        weight_decay= training_params.weight_decay,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        hub_token=HF_TOKEN,
+        hub_private_repo=True,
+        push_to_hub=True,
+        hub_model_id=config.FT_MODEL_CHECKPOINT,
         # gradient_accumulation_steps= gradient_accumulation_steps,
         # optim=  training_params.optim,
         # save_steps= training_params.save_steps,
         # logging_strategy=training_params.logging_strategy,
         # logging_steps= training_params.logging_steps,
-        # learning_rate= learning_rate,
         # weight_decay= training_params.weight_decay,
         # fp16= training_params.fp16,
         # bf16= training_params.bf16,
@@ -123,20 +146,20 @@ def main(ADAPTERS_CHECKPOINT,
         report_to="wandb",
         #lr_scheduler_type="cosine",
         #warmup_ratio = 0.1,
-
         # logging strategies 
         # remove_unused_columns=False
     )
 
     trainer = Trainer(
         model=model,
+        args=training_arguments,
         train_dataset=train_data,
         eval_dataset=val_data,
         # dataset_text_field=training_params.dataset_text_field,
         # peft_config=lora_config,
-        args=training_arguments,
         data_collator=data_collator,
         tokenizer=tokenizer,
+        compute_metrics=compute_metrics,
         # max_seq_length = training_params.max_seq_length
     )
 
@@ -156,10 +179,10 @@ def main(ADAPTERS_CHECKPOINT,
 
 if __name__ == "__main__":
 
-    tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL_CHECKPOINT, add_eos_token=False,
+    tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL_CHECKPOINT,
                                             token = LLAMA_TOKEN) #, cache_dir='/data/disk1/share/pferrazzi/.cache')
     tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = 'right'
+    # tokenizer.padding_side = 'right'
 
     preprocessor = DataPreprocessor(config.BASE_MODEL_CHECKPOINT, 
                                         tokenizer)
@@ -178,11 +201,34 @@ if __name__ == "__main__":
     label2id = dataset_format_converter.label2id
     id2label = {v: k for k, v in label2id.items()}
     label_list = list(label2id.keys())
-    dataset_format_converter.set_tokenizer(tokenizer)
-    dataset_format_converter.set_max_seq_length(training_params.max_seq_length)
-    tokenized_ds = ds.map(dataset_format_converter.tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-    data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
-    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(dataset, config.TRAIN_LAYER)
+
+    def tokenize_and_align_labels(examples):
+        tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
+
+        labels = []
+        for i, label in enumerate(examples[f"ner_tags"]):
+            word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+            previous_word_idx = None
+            label_ids = []
+            for word_idx in word_ids:  # Set the special tokens to -100.
+                if word_idx is None:
+                    label_ids.append(-100)
+                elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+                    label_ids.append(label[word_idx])
+                else:
+                    label_ids.append(-100)
+                previous_word_idx = word_idx
+            labels.append(label_ids)
+
+        tokenized_inputs["labels"] = labels
+        return tokenized_inputs
+    tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+
+    # dataset_format_converter.set_tokenizer(tokenizer)
+    # dataset_format_converter.set_max_seq_length(training_params.max_seq_length)
+    # tokenized_ds = ds.map(dataset_format_converter.tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+    # data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
+    # train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(dataset, config.TRAIN_LAYER)
 
 
     # load_in_4bit_list = model_loading_params.load_in_4bit
@@ -221,7 +267,6 @@ if __name__ == "__main__":
                             # load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold,
                             r, lora_alpha, lora_dropout,
                             gradient_accumulation_steps,learning_rate,
-                            data_collator,
                             tokenizer)
                         gc.collect()
                         torch.cuda.empty_cache()
