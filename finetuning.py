@@ -67,7 +67,6 @@ if use_e3c:
     id2label = {v: k for k, v in label2id.items()}
     label_list = list(label2id.keys())
 
-
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
 
