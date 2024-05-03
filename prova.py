@@ -109,7 +109,7 @@ def tokenize_and_align_labels(examples):
 
 tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
 train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
-print(train_data['sentence'])
+print(train_data['sentence'][0])
 
 model = MistralForTokenClassification.from_pretrained(
     peft_config.base_model_name_or_path,
@@ -122,6 +122,6 @@ model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN)
 model = model.merge_and_unload()
 
 token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
-sentence = train_data['sentence']
+sentence = train_data['sentence'][0]
 tokens = token_classifier(sentence)
 print(tokens)
