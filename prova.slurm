@@ -1,13 +1,13 @@
 #!/bin/bash -l
 ### job name
-#SBATCH --job-name=finetuning
+#SBATCH --job-name=prova
 
 ### 
 #SBATCH --mail-user=ferrazzi@math.unipd.it
 
 ### Standard output and standard error for our job
-#SBATCH --error=finetuning.err
-#SBATCH --output=finetuning.out
+#SBATCH --error=prova.err
+#SBATCH --output=prova.out
 
 ### queue/partition choosed
 #SBATCH --partition=testing
