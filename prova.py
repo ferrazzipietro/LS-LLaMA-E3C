@@ -117,7 +117,7 @@ model = MistralForTokenClassification.from_pretrained(
     token = HF_TOKEN,
     # cache_dir='/data/disk1/share/pferrazzi/.cache'
 )
-model = PeftModel.from_pretrained(model, adapters)
+model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN)
 # merge_and_unload is necessary for inference
 model = model.merge_and_unload()
 
