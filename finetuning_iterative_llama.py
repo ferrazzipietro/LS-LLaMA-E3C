@@ -144,8 +144,6 @@ def main(ADAPTERS_CHECKPOINT,
         group_by_length= training_params.group_by_length,
         lr_scheduler_type= training_params.lr_scheduler_type,
         report_to="wandb",
-        lr_scheduler_type="cosine",
-        warmup_ratio = 0.1,
         # logging strategies 
         # remove_unused_columns=False
     )
