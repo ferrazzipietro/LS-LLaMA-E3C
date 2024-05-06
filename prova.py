@@ -121,7 +121,17 @@ model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN)
 # merge_and_unload is necessary for inference
 model = model.merge_and_unload()
 
-token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
-sentence = train_data['sentence'][0]
-tokens = token_classifier(sentence)
-print(tokens)
+# token_classifier = pipeline("token-classification", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
+# sentence = train_data['sentence'][0]
+# tokens = token_classifier(sentence)
+# print(tokens)
+
+from transformers.pipelines.pt_utils import KeyDataset
+from tqdm.auto import tqdm
+from transformers import pipeline
+
+token_classifier = pipeline("token-classification", model=model, 
+                            tokenizer=tokenizer, 
+                            aggregation_strategy="simple")
+for out in tqdm(token_classifier(KeyDataset(train_data, "sentence"))):
+    print(out)
