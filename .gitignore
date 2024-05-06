@@ -167,3 +167,6 @@ cython_debug/
 wandb/
 ls_llama_e3c_locale/
 my_awesome_ds_model/
+training_output/
+*.err
+*.out
