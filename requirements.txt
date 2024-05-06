@@ -6,3 +6,5 @@ transformers==4.38.2
 python-dotenv==1.0.1
 seqeval==1.2.2
 bitsandbytes==0.43.1
+pyarrow==14.0.1
+gradio==4.14.0
