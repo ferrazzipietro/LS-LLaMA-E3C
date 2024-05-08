@@ -132,7 +132,6 @@ from transformers import pipeline
 
 token_classifier = pipeline("token-classification", model=model, 
                             tokenizer=tokenizer, 
-                            aggregation_strategy="simple",
-                            batch_size=12)
+                            aggregation_strategy="simple", batch_size=12)
 for out in tqdm(token_classifier(KeyDataset(train_data, "sentence"))):
     print(out)
