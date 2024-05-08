@@ -88,6 +88,8 @@ class DatasetFormatConverter():
 
     def apply(self):
         self.dataset = self.dataset.map(self._entities_from_dict_to_labels_list)
+        self.dataset = self.dataset.rename_column("word_level_labels", "ner_tags")
+        self.dataset = self.dataset.rename_column("words", "tokens")
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
@@ -114,6 +116,6 @@ class DatasetFormatConverter():
                     label_ids.append(-100)
                 previous_word_idx = word_idx
             labels.append(label_ids)
-
         tokenized_inputs["labels"] = labels
         return tokenized_inputs
+    
