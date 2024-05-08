@@ -86,10 +86,22 @@ model = model.merge_and_unload()
 from transformers.pipelines.pt_utils import KeyDataset
 from tqdm.auto import tqdm
 from transformers import pipeline
+import pandas as pd
 
 token_classifier = pipeline("token-classification", model=model, 
                             tokenizer=tokenizer, 
-                            aggregation_strategy="simple",
-                            batch_size=12)
+                            aggregation_strategy="simple", batch_size=12)
+
+df = []
 for out in tqdm(token_classifier(KeyDataset(train_data, "sentence"))):
     print(out)
+    df.append(out)
+
+tmp_file = str(df)
+with open('output_model_log.txt', 'w') as file:
+    # Write the string to the file
+    file.write(tmp_file)
+
+flat_list = [item for sublist in df for item in sublist]
+df = pd.DataFrame(flat_list)
+df.to_csv('output.csv', index=False)
