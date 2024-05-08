@@ -1,8 +1,0 @@
-WARNING: grid.env NOT FOUND
-NO Enviroment
-Date: Fri 03 May 2024 03:31:45 PM UTC
-Directory: /home/ferrazzi/llm/LS-LLaMA-E3C
-This job will be executed on th following nodes: vgpu1-0
-
-/home/ferrazzi/.conda/envs/gpu_venv_lates/bin/python
-Python 3.8.18

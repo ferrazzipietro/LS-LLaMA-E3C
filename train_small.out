@@ -1,7 +1,0 @@
-Date: Mon 29 Apr 2024 08:46:05 AM UTC
-Directory: /extra/ferrazzi/llm/LS-LLaMA-E3C
-This job will be executed on th following nodes: vgpu8-0
-
-/conf/shared-software/anaconda/bin/python
-Python 3.9.17
-Date: Mon 29 Apr 2024 08:46:07 AM UTC
