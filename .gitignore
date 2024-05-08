@@ -170,3 +170,4 @@ my_awesome_ds_model/
 training_output/
 *.err
 *.out
+training_output
