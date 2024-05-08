@@ -171,3 +171,5 @@ training_output/
 *.err
 *.out
 training_output
+train_ls_llama.err
+train_ls_llama.out
