@@ -1,9 +1,21 @@
 import string
 
 class DatasetFormatConverter():
+    """
+    """
     def __init__(self, dataset):
         self.dataset = dataset
         self.label2id = { "O": 0, "B": 1, "I": 2}
+
+    def get_id2label(self):
+        id2label = {v: k for k, v in self.label2id.items()}
+        return id2label
+    
+    def get_label2id(self):
+        return self.label2id
+    
+    def get_label_list(self):
+        return list(self.label2id.keys())
     
     def _reformat_entities_dict(self, enitities_dicts_list):
         return [{item.get('text') : item.get('offsets')} for item in enitities_dicts_list]
@@ -76,6 +88,8 @@ class DatasetFormatConverter():
 
     def apply(self):
         self.dataset = self.dataset.map(self._entities_from_dict_to_labels_list)
+        self.dataset = self.dataset.rename_column("word_level_labels", "ner_tags")
+        self.dataset = self.dataset.rename_column("words", "tokens")
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
@@ -102,6 +116,6 @@ class DatasetFormatConverter():
                     label_ids.append(-100)
                 previous_word_idx = word_idx
             labels.append(label_ids)
-
         tokenized_inputs["labels"] = labels
         return tokenized_inputs
+    
