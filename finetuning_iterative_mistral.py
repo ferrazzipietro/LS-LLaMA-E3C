@@ -67,7 +67,7 @@ def main(ADAPTERS_CHECKPOINT,
     # Monitering the LLM
     wandb.login(key = WANDB_KEY)
     run = wandb.init(project=config.WANDB_PROJECT_NAME, job_type="training", anonymous="allow",
-                    name=config.WANDB_RUN_NAME,
+                    name=ADAPTERS_CHECKPOINT.split('/')[1],
                     config={'model': config.BASE_MODEL_CHECKPOINT, 
                             'dataset': config.DATASET_CHEKPOINT, 
                             'layer': config.TRAIN_LAYER,
