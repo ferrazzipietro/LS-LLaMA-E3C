@@ -50,7 +50,7 @@ def compute_metrics(p):
     return {
         "precision": results["overall_precision"],
         "recall": results["overall_recall"],
-        "f1": results["soverall_f1"],
+        "f1": results["overall_f1"],
         "accuracy": results["overall_accuracy"],
     }
 
