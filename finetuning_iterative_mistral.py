@@ -24,7 +24,7 @@ import torch
 from tqdm.auto import tqdm
 
 from utils import DataPreprocessor, DatasetFormatConverter
-from billm.modeling_mistralbillm import MistralForTokenClassification
+from src.billm import MistralForTokenClassification
 
 import string
 
