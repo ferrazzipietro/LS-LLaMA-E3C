@@ -448,6 +448,7 @@ class MistralForTokenClassification(MistralPreTrainedModel):
             return_dict=return_dict,
         )
         sequence_output = outputs[0]
+        print(f"sequence_output.shape={sequence_output.shape}")
 
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)

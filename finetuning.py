@@ -126,10 +126,8 @@ model.print_trainable_parameters()
 tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
-
 if use_e3c:
     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
-
 
 
 wandb.login(key = WANDB_KEY)

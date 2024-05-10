@@ -97,25 +97,51 @@ class DatasetFormatConverter():
     def set_max_seq_length(self, max_seq_length):
         self.max_seq_length = max_seq_length
 
+    # def tokenize_and_align_labels(self, examples): COPIED FROM HF, WRONG
+    #     """
+    #     """
+    #     tokenized_inputs = self.tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=self.max_seq_length, truncation=True)
+
+    #     labels = []
+    #     for i, label in enumerate(examples[f"ner_tags"]):
+    #         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+    #         previous_word_idx = None
+    #         label_ids = []
+    #         for word_idx in word_ids:  # Set the special tokens to -100.
+    #             if word_idx is None:
+    #                 label_ids.append(-100)
+    #             elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+    #                 label_ids.append(label[word_idx])
+    #             else:
+    #                 label_ids.append(-100)
+    #             previous_word_idx = word_idx
+    #         labels.append(label_ids)
+    #     tokenized_inputs["labels"] = labels
+    #     return tokenized_inputs
+
     def tokenize_and_align_labels(self, examples):
-        """
-        """
-        tokenized_inputs = self.tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=self.max_seq_length, truncation=True)
+        tokenized_inputs = self.tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
 
         labels = []
-        for i, label in enumerate(examples[f"ner_tags"]):
+        for i, words_label in enumerate(examples[f"ner_tags"]):
             word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
-            previous_word_idx = None
             label_ids = []
-            for word_idx in word_ids:  # Set the special tokens to -100.
+            for k, word_idx in enumerate(word_ids): 
+                same_word_as_previous  = False if (word_idx != word_ids[k-1] or k==0) else True
                 if word_idx is None:
-                    label_ids.append(-100)
-                elif word_idx != previous_word_idx:  # Only label the first token of a given word.
-                    label_ids.append(label[word_idx])
-                else:
-                    label_ids.append(-100)
-                previous_word_idx = word_idx
+                    token_label = -100
+                elif words_label[word_idx] == self.label2id['O']:
+                    token_label = self.label2id['O']
+                elif same_word_as_previous:
+                    token_label = self.label2id['I']
+                elif not same_word_as_previous:
+                    token_label = words_label[word_idx]
+                label_ids.append(token_label)
+                # if word_idx is not None:#  and k>12:
+                #     print("word_label: ", words_label[word_idx])
+                # print(tokenizer.decode(tokenized_inputs[i].ids[k]), ": ",word_idx,  "\nassigned_token_label:",  label_ids[k], '\n')
             labels.append(label_ids)
+
         tokenized_inputs["labels"] = labels
         return tokenized_inputs
-    
+        
