@@ -14,7 +14,7 @@ import os
 
 
 from utils import DataPreprocessor, DatasetFormatConverter
-from src.billm.modeling_mistral import MistralForTokenClassification
+from billm.modeling_mistralbillm import MistralForTokenClassification
 
 
 

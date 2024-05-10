@@ -9,7 +9,7 @@ import torch
 from tqdm.auto import tqdm
 
 from utils import DataPreprocessor, DatasetFormatConverter
-from src.billm.modeling_mistral import MistralForTokenClassification
+from billm.modeling_mistralbillm import MistralForTokenClassification
 
 import string
 
@@ -183,7 +183,7 @@ import torch
 from tqdm.auto import tqdm
 
 # from utils import DataPreprocessor, DatasetFormatConverter
-from src.billm.modeling_mistral import MistralForTokenClassification
+from billm.modeling_mistralbillm import MistralForTokenClassification
 
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']

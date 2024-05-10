@@ -18,26 +18,26 @@ import evaluate
 
 from config.finetuning_llama2 import training_params, lora_params, model_loading_params, config, preprocessing_params
 from src.billm.modeling_llama import LlamaForTokenClassification 
-# def compute_metrics(p):
-#     predictions, labels = p
-#     predictions = np.argmax(predictions, axis=2)
+def compute_metrics(p):
+    predictions, labels = p
+    predictions = np.argmax(predictions, axis=2)
 
-#     true_predictions = [
-#         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-#         for prediction, label in zip(predictions, labels)
-#     ]
-#     true_labels = [
-#         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-#         for prediction, label in zip(predictions, labels)
-#     ]
+    true_predictions = [
+        [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
+    true_labels = [
+        [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+        for prediction, label in zip(predictions, labels)
+    ]
 
-#     results = seqeval.compute(predictions=true_predictions, references=true_labels)
-#     return {
-#         "precision": results["overall_precision"],
-#         "recall": results["overall_recall"],
-#         "f1": results["soverall_f1"],
-#         "accuracy": results["overall_accuracy"],
-#     }
+    results = seqeval.compute(predictions=true_predictions, references=true_labels)
+    return {
+        "precision": results["overall_precision"],
+        "recall": results["overall_recall"],
+        "f1": results["soverall_f1"],
+        "accuracy": results["overall_accuracy"],
+    }
 
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
@@ -53,7 +53,7 @@ def main(ADAPTERS_CHECKPOINT,
     # Monitering the LLM
     wandb.login(key = WANDB_KEY)
     run = wandb.init(project=config.WANDB_PROJECT_NAME, job_type="training", anonymous="allow",
-                    name=config.WANDB_RUN_NAME,
+                    name=ADAPTERS_CHECKPOINT.split('/')[1],
                     config={'model': config.BASE_MODEL_CHECKPOINT, 
                             'dataset': config.DATASET_CHEKPOINT, 
                             'layer': config.TRAIN_LAYER,
@@ -125,12 +125,17 @@ def main(ADAPTERS_CHECKPOINT,
         per_device_eval_batch_size= training_params.per_device_train_batch_size,
         num_train_epochs= training_params.num_train_epochs,
         weight_decay= training_params.weight_decay,
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
         hub_token=HF_TOKEN,
         hub_private_repo=True,
         push_to_hub=True,
         hub_model_id=config.FT_MODEL_CHECKPOINT,
+        evaluation_strategy = training_params.evaluation_strategy,
+        save_strategy = training_params.save_strategy,
+        eval_steps = training_params.eval_steps,
+        greater_is_better = training_params.greater_is_better,
+        metric_for_best_model = training_params.metric_for_best_model,
+        save_total_limit = training_params.save_total_limit,
+        load_best_model_at_end = training_params.load_best_model_at_end,
         gradient_accumulation_steps= gradient_accumulation_steps,
         optim=  training_params.optim,
         save_steps= training_params.save_steps,
@@ -182,13 +187,11 @@ if __name__ == "__main__":
     tokenizer.pad_token = tokenizer.eos_token
     # tokenizer.padding_side = 'right'
     # seqeval = evaluate.load("seqeval")
-
-
     preprocessor = DataPreprocessor(config.BASE_MODEL_CHECKPOINT, 
                                         tokenizer)
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[config.TRAIN_LAYER]
-    dataset = dataset.shuffle(seed=1234)  
+    dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
     dataset_format_converter = DatasetFormatConverter(dataset)
     dataset_format_converter.apply()
     ds = dataset_format_converter.dataset
@@ -198,7 +201,8 @@ if __name__ == "__main__":
     dataset_format_converter.set_tokenizer(tokenizer)
     dataset_format_converter.set_max_seq_length(256)
     tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-
+    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, config.TRAIN_LAYER)
+    print(train_data[0]['labels'])
     # load_in_4bit_list = model_loading_params.load_in_4bit
     # bnb_4bit_quant_type_list = model_loading_params.bnb_4bit_quant_type
     # bnb_4bit_compute_dtype_list = model_loading_params.bnb_4bit_compute_dtype

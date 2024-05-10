@@ -12,7 +12,6 @@ from utils.data_preprocessor import DataPreprocessor
 import datetime
 import gc
 from utils import DataPreprocessor, DatasetFormatConverter
-import numpy as np
 import evaluate
 import numpy as np
 import pandas as pd
@@ -25,13 +24,12 @@ import torch
 from tqdm.auto import tqdm
 
 from utils import DataPreprocessor, DatasetFormatConverter
-from src.billm.modeling_mistral import MistralForTokenClassification
+from billm.modeling_mistralbillm import MistralForTokenClassification
 
 import string
 
 
 from config.finetuning_mistral import training_params, lora_params, model_loading_params, config, preprocessing_params
-from src.billm.modeling_mistral import MistralForTokenClassification
 # def compute_metrics(p):
 #     predictions, labels = p
 #     predictions = np.argmax(predictions, axis=2)
