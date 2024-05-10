@@ -43,6 +43,7 @@ def compute_metrics(p):
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
+HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN']
 
 
 def main(ADAPTERS_CHECKPOINT,
@@ -170,7 +171,7 @@ def main(ADAPTERS_CHECKPOINT,
     trainer.train()
 
     # trainer.model.save_pretrained(f"{config.BASE_MODEL_CHECKPOINT.split('/')[1]}_prova") # save locally
-    trainer.model.push_to_hub(ADAPTERS_CHECKPOINT, token=HF_TOKEN)
+    trainer.model.push_to_hub(ADAPTERS_CHECKPOINT, token=HF_TOKEN_WRITE)
 
     wandb.finish()
     del model
