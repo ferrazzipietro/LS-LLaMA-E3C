@@ -10,8 +10,8 @@
     target_modules - The names of the modules to apply the adapter to. If None, automatic.
 """
 from peft import TaskType
-r = [16]# [16, 32] # [16, 32, 64] reduce the number to finish faster
-lora_alpha = [32]#[32, 64] 
+r = [16, 32, 64] # reduce the number to finish faster
+lora_alpha = [32, 64] 
 lora_dropout = [0.01] # [0.05, 0.01]
 bias =  "lora_only" 
 use_rslora = True
