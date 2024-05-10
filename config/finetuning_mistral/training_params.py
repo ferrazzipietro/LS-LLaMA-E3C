@@ -19,8 +19,8 @@ evaluation_strategy= "steps"
 save_strategy=evaluation_strategy
 save_steps= 10
 eval_steps=save_steps
-greater_is_better=True
-metric_for_best_model="f1"
+greater_is_better=False
+metric_for_best_model="eval_loss"
 save_total_limit = 1
 load_best_model_at_end = True
 
