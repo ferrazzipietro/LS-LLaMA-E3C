@@ -30,7 +30,7 @@ load_best_model_at_end = True
     dataset_text_field - The name of the field containing the text to be used for the dataset. Defaults to "text".
     packing - Used only in case dataset_text_field is passed. This argument is used by the ConstantLengthDataset to pack the sequences of the dataset.
 """
-max_seq_length= 128 # It is also used to set the maximum number of tokens to be processed by the model in the definition of DatasetFormatConverter.tokenize_and_align_labels.
+max_seq_length= 512 # It is also used to set the maximum number of tokens to be processed by the model in the definition of DatasetFormatConverter.tokenize_and_align_labels.
 # longer sequences will be truncated
 dataset_text_field="prompt"
 packing=False

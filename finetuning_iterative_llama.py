@@ -12,13 +12,27 @@ from utils.data_preprocessor import DataPreprocessor
 import datetime
 import gc
 from utils import DataPreprocessor, DatasetFormatConverter
-import numpy as np
 import evaluate
+import numpy as np
+import pandas as pd
+from datasets import load_dataset, Dataset
+from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
+from transformers.pipelines.pt_utils import KeyDataset
+from peft import PeftModel, PeftConfig
+from dotenv import dotenv_values
+import torch
+from tqdm.auto import tqdm
 
+from utils import DataPreprocessor, DatasetFormatConverter
+#from src.billm import MistralForTokenClassification
+from src.billm import LlamaForTokenClassification
+
+import string
 
 from config.finetuning_llama2 import training_params, lora_params, model_loading_params, config, preprocessing_params
-from src.billm.modeling_llama import LlamaForTokenClassification 
+
 seqeval = evaluate.load("seqeval")
+
 def compute_metrics(p):
     predictions, labels = p
     predictions = np.argmax(predictions, axis=2)
@@ -33,17 +47,18 @@ def compute_metrics(p):
     ]
 
     results = seqeval.compute(predictions=true_predictions, references=true_labels)
+    print(results)
     return {
         "precision": results["overall_precision"],
         "recall": results["overall_recall"],
-        "f1": results["soverall_f1"],
+        "f1": results["overall_f1"],
         "accuracy": results["overall_accuracy"],
     }
 
-HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
-HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN']
+HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
+HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
 
 
 def main(ADAPTERS_CHECKPOINT,
@@ -68,7 +83,7 @@ def main(ADAPTERS_CHECKPOINT,
         id2label=id2label, 
         label2id=label2id,
         device_map="auto",
-        token=LLAMA_TOKEN,
+        token=HF_TOKEN,
         torch_dtype=model_loading_params.torch_dtype,
         #cache_dir='/data/disk1/share/pferrazzi/.cache'
         )
@@ -130,7 +145,7 @@ def main(ADAPTERS_CHECKPOINT,
         hub_token=HF_TOKEN,
         hub_private_repo=True,
         push_to_hub=True,
-        hub_model_id=config.FT_MODEL_CHECKPOINT,
+        hub_model_id=ADAPTERS_CHECKPOINT,
         evaluation_strategy = training_params.evaluation_strategy,
         save_strategy = training_params.save_strategy,
         eval_steps = training_params.eval_steps,
@@ -151,6 +166,8 @@ def main(ADAPTERS_CHECKPOINT,
         group_by_length= training_params.group_by_length,
         lr_scheduler_type= training_params.lr_scheduler_type,
         report_to="wandb",
+        #lr_scheduler_type="cosine",
+        #warmup_ratio = 0.1,
         # logging strategies 
         # remove_unused_columns=False
     )
@@ -169,6 +186,10 @@ def main(ADAPTERS_CHECKPOINT,
     )
 
     trainer.train()
+    results = trainer.evaluate()
+
+    # Print evaluation results
+    print(f"The results on the final model are: {results}")
 
     # trainer.model.save_pretrained(f"{config.BASE_MODEL_CHECKPOINT.split('/')[1]}_prova") # save locally
     trainer.model.push_to_hub(ADAPTERS_CHECKPOINT, token=HF_TOKEN_WRITE)
@@ -185,10 +206,12 @@ def main(ADAPTERS_CHECKPOINT,
 if __name__ == "__main__":
 
     tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL_CHECKPOINT,
-                                            token = LLAMA_TOKEN) #, cache_dir='/data/disk1/share/pferrazzi/.cache')
+                                            token = HF_TOKEN) #, cache_dir='/data/disk1/share/pferrazzi/.cache')
     tokenizer.pad_token = tokenizer.eos_token
     # tokenizer.padding_side = 'right'
     # seqeval = evaluate.load("seqeval")
+
+
     preprocessor = DataPreprocessor(config.BASE_MODEL_CHECKPOINT, 
                                         tokenizer)
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
@@ -201,10 +224,11 @@ if __name__ == "__main__":
     id2label = dataset_format_converter.get_id2label()
     label_list = dataset_format_converter.get_label_list()
     dataset_format_converter.set_tokenizer(tokenizer)
-    dataset_format_converter.set_max_seq_length(256)
+    dataset_format_converter.set_max_seq_length(training_params.max_seq_length)
     tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, config.TRAIN_LAYER)
     print(train_data[0]['labels'])
+
     # load_in_4bit_list = model_loading_params.load_in_4bit
     # bnb_4bit_quant_type_list = model_loading_params.bnb_4bit_quant_type
     # bnb_4bit_compute_dtype_list = model_loading_params.bnb_4bit_compute_dtype

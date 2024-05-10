@@ -223,7 +223,7 @@ if __name__ == "__main__":
     id2label = dataset_format_converter.get_id2label()
     label_list = dataset_format_converter.get_label_list()
     dataset_format_converter.set_tokenizer(tokenizer)
-    dataset_format_converter.set_max_seq_length(256)
+    dataset_format_converter.set_max_seq_length(training_params.max_seq_length)
     tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, config.TRAIN_LAYER)
     print(train_data[0]['labels'])
