@@ -80,7 +80,7 @@ def main(ADAPTERS_CHECKPOINT,
         device_map="auto",
         token=HF_TOKEN,
         torch_dtype=model_loading_params.torch_dtype,
-        #cache_dir='/data/disk1/share/pferrazzi/.cache'
+        cache_dir='/data/disk1/share/pferrazzi/.cache'
         )
         model.gradient_checkpointing_enable() # Activates gradient checkpointing for the current model.
         model.config.use_cache = False
