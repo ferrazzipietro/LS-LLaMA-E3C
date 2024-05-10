@@ -13,7 +13,6 @@ warmup_ratio= 0.3
 group_by_length= True
 lr_scheduler_type= "constant"
 
-save_strategy="steps"
 logging_steps=50
 logging_strategy="steps"
 evaluation_strategy= "steps"
