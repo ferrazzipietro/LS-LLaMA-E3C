@@ -30,6 +30,8 @@ import string
 
 from config.finetuning_mistral import training_params, lora_params, model_loading_params, config, preprocessing_params
 
+seqeval = evaluate.load("seqeval")
+
 def compute_metrics(p):
     predictions, labels = p
     predictions = np.argmax(predictions, axis=2)
@@ -176,7 +178,7 @@ def main(ADAPTERS_CHECKPOINT,
         # peft_config=lora_config,
         data_collator=data_collator,
         tokenizer=tokenizer,
-        # compute_metrics=compute_metrics,
+        compute_metrics=compute_metrics,
         # max_seq_length = training_params.max_seq_length
     )
 
