@@ -36,10 +36,15 @@ seqeval = evaluate.load("seqeval")
 def compute_metrics(p):
     predictions, labels = p
     print('predictions:\n',predictions)
+    print('size pred:',predictions.shape)
 
-    print('labels:\n',predictions)
+    print('labels:\n',labels)
+    print('labels pred:',labels.shape)
     predictions = np.argmax(predictions, axis=2)
     print('predictions:\n',predictions)
+    print('len(predictions[0][0]):\n',len(predictions[0][0]))
+
+    print('len(predictions[0]):\n',len(predictions[0]))
 
     true_predictions = [
         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
