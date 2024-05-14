@@ -60,7 +60,7 @@ WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
-login(token=HF_TOKEN)
+# login(token=HF_TOKEN)
 
 def main(ADAPTERS_CHECKPOINT,
          #load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold, llm_int8_skip_modules,
@@ -143,7 +143,7 @@ def main(ADAPTERS_CHECKPOINT,
         per_device_eval_batch_size= training_params.per_device_train_batch_size,
         num_train_epochs= training_params.num_train_epochs,
         weight_decay= training_params.weight_decay,
-        hub_token=HF_TOKEN,
+        hub_token=HF_TOKEN_WRITE,
         hub_private_repo=True,
         push_to_hub=True,
         hub_model_id=ADAPTERS_CHECKPOINT,
