@@ -60,7 +60,7 @@ WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
-# login(token=HF_TOKEN)
+login(token=HF_TOKEN_WRITE)
 
 def main(ADAPTERS_CHECKPOINT,
          #load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold, llm_int8_skip_modules,
