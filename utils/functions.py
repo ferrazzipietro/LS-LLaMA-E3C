@@ -51,6 +51,7 @@ from peft import PeftModel, PeftConfig
 from dotenv import dotenv_values
 import torch
 from tqdm.auto import tqdm
+import gc
 
 
 from .output_generator import OutputGenerator
@@ -112,3 +113,5 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
         test_data.push_to_hub(adapters + 'data', token=HF_TOKEN_WRITE, 
                               split='test' )
 
+        gc.collect()
+        torch.cuda.empty_cache()
