@@ -218,8 +218,7 @@ if __name__ == "__main__":
     # seqeval = evaluate.load("seqeval")
 
 
-    preprocessor = DataPreprocessor(config.BASE_MODEL_CHECKPOINT, 
-                                        tokenizer)
+    preprocessor = DataPreprocessor()
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[config.TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
