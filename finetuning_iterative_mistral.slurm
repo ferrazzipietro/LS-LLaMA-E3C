@@ -43,7 +43,6 @@ export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256'
 
 python --version
 pip install --upgrade huggingface_hub
-huggingface-cli login --token "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"
 python  finetuning_iterative_mistral.py
 echo -n 'Date: '
 date
