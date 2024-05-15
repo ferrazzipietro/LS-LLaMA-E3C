@@ -65,7 +65,7 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
-    preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
+    preprocessor = DataPreprocessor('NotRelevant', 
                                     tokenizer)
     dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
     dataset = dataset[TRAIN_LAYER]

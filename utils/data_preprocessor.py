@@ -14,6 +14,7 @@ class DataPreprocessor():
         self.n_shots = None
         #self.model_type = model_checkpoint.split('/')[1].lower().split('-')[0]
         self.model_type = 'qwen' if model_checkpoint.split('/')[0] == 'Qwen' else model_checkpoint.split('/')[1].lower().split('-')[0]
+        if model_checkpoint =='NotRelevant': self.model_type = 'llama'
         # if self.model_type == 'zefiro':
         #     self.model_type  = 'mistral'
         if self.model_type not in ['mistral', 'llama', 'gemma', 'qwen', 'zefiro']:
