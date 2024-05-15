@@ -1,4 +1,5 @@
-from utils import generate_adapters_list, generate_model_predictions
+from utils import generate_adapters_list, generate_model_predictions, OutputGenerator, DataPreprocessor
+from utils.data_format_converter import  DatasetFormatConverter
 from dotenv import dotenv_values
 import os 
 import torch
@@ -17,9 +18,6 @@ from tqdm.auto import tqdm
 import gc
 
 
-from .output_generator import OutputGenerator
-from .data_format_converter import DatasetFormatConverter
-from .data_preprocessor import DataPreprocessor
 
 from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
@@ -78,7 +76,7 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
         del model
         gc.collect()
         torch.cuda.empty_cache()
-        
+
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
 login(token=HF_TOKEN_WRITE)
