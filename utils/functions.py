@@ -99,7 +99,7 @@ def generate_model_predictions(adapters_list: 'list[str]'):
             peft_config.base_model_name_or_path,
             num_labels=len(label2id), id2label=id2label, label2id=label2id,
             token = HF_TOKEN_WRITE,
-            cache_dir='/data/disk1/share/pferrazzi/.cache',
+            # cache_dir='/data/disk1/share/pferrazzi/.cache',
             device_map='auto',
             # quantization_config = bnb_config
             )
