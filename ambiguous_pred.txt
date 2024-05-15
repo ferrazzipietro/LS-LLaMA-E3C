@@ -32,6 +32,8 @@ The problem are here:
 
 
 
+
+
 'O',      'I',    'I',     'I',     'I',      'I',        'O',           'O',     'O', 'O',    'B',  'B', 'O',       'B',   'B', 'O',      'I', 'B',  'B',   'O',  'B',  'B',  'O',   'B',   'B',    'O', 'B',       'B',    'B',    'B',        'I',          'B', 'O',   'I',    'O',   'O',     'O',          'I', 'O',   'O',     'O',    'I',    'O', 'B',  'B',      'O',       'O',  'O',  'B',    'I',        'B',     'B'
 'O',      'O',    'O',     'O',     'O',      'O',        'O',           'O',     'O', 'B',    'I',  'I', 'B',       'I',   'I', 'B',      'I', 'I',  'I',   'B',  'I',  'I',  'I',   'I',   'O',    'O', 'O',       'O',    'O',    'O',        'O',          'O', 'O',   'O',    'O',   'O',     'O',          'O', 'B',   'I',     'I',    'O',    'O', 'O',  'O',      'O',       'B',  'I',  'I',    'O',        'O',     'O'
 '▁Res', 'iding', '▁in', '▁Middle', '▁East', '▁with', '▁background', '▁history', '▁of', '▁fe', 'ver', ',', '▁back', 'ache', ',', '▁skin', '▁r', 'ash', ',', '▁spl', 'en', 'om', 'eg', 'aly', '▁and', '▁a', '▁low', '▁plate', 'let', '▁count', '▁possibility', '▁of', '▁at', 'yp', 'ical', '▁in', 'fection', '▁like', '▁Bru', 'cell', 'osis', '▁with', '▁NS', 'A', 'ID', '▁induced', '▁gi', '▁ble', 'ed', '▁was', '▁considered', '.'
@@ -40,3 +42,11 @@ problems:
     '▁Res', 'iding', '▁in' is OII
     '▁fe', 'ver', is OB. It should be BI
     '▁back', 'ache' is OB. It should be BI
+
+
+
+
+
+predictions           ['O',      'I',    'O',     'I',      'I',      'O',      'O',           'I',     'O',   'B',  'I',    'I',  'B',   'I',    'I',   'O',    'O', 'I',   'I',   'O',   'I',  'O',  'I', 'I',     'O',  'B',  'O',     'O',      'I',     'I',      'O',          'O',   'O',  'O',   'I',    'I',     'I',      'I',     'O',   'I',     'I',     'O',   'O',  'O', 'O',     'O',      'B',    'B',  'I',   'O',       'O',       'B']
+ground_truth_labels   ['O',      'O',    'O',     'O',      'O',      'O',      'O',           'O',     'O',   'B',  'I',    'I',  'B',   'I',    'I',   'B',    'I', 'I',   'I',   'B',   'I',  'I',  'I', 'I',     'O',  'O',  'O',     'O',      'O',     'O',      'O',          'O',   'O',  'O',   'O',    'O',     'O',      'O',     'B',   'I',     'I',     'O',   'O',  'O', 'O',     'O',      'B',    'I',  'I',   'O',       'O',       'O']
+                      ['▁Res', 'iding', '▁in', '▁Middle', '▁East', '▁with', '▁background', '▁history', '▁of', '▁fe', 'ver', ',', '▁back', 'ache', ',', '▁skin', '▁r', 'ash', ',', '▁spl', 'en', 'om', 'eg', 'aly', '▁and', '▁a', '▁low', '▁plate', 'let', '▁count', '▁possibility', '▁of', '▁at', 'yp', 'ical', '▁in', 'fection', '▁like', '▁Bru', 'cell', 'osis', '▁with', '▁NS', 'A', 'ID', '▁induced', '▁gi', '▁ble', 'ed', '▁was', '▁considered', '.']

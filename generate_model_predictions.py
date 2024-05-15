@@ -69,7 +69,7 @@ def generate_model_predictions(adapters_list: 'list[str]'):
         model = model.merge_and_unload()
         print('DONE')
         generator = OutputGenerator(model, tokenizer, label2id, label_list)
-        test_data = generator.generate(data, batch_size = 64)
+        test_data = generator.generate(data, batch_size = 32)
         print(test_data)
         test_data.push_to_hub(adapters + 'data', token=HF_TOKEN_WRITE, 
                               split='test' )
@@ -77,4 +77,4 @@ def generate_model_predictions(adapters_list: 'list[str]'):
 
 
 adapters_list = generate_adapters_list('llama', appendix='5Epochs')
-generate_model_predictions(adapters_list[:2])
+generate_model_predictions(adapters_list)
