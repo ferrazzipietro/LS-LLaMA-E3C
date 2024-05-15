@@ -81,4 +81,4 @@ login(token=HF_TOKEN_WRITE)
 
 
 adapters_list = generate_adapters_list('llama', appendix='5Epochs')
-generate_model_predictions(adapters_list, batch_size=64)
+generate_model_predictions(adapters_list, batch_size=2)
