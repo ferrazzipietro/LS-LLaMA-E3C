@@ -198,7 +198,7 @@ def main(ADAPTERS_CHECKPOINT,
     print(f"The results on the final model are: {results}")
 
     # trainer.model.save_pretrained(f"{config.BASE_MODEL_CHECKPOINT.split('/')[1]}_prova") # save locally
-    trainer.model.push_to_hub(ADAPTERS_CHECKPOINT, token=HF_TOKEN_WRITE)
+    trainer.model.push_to_hub(ADAPTERS_CHECKPOINT, token=HF_TOKEN_WRITE, split='test')
 
     wandb.finish()
     del model
