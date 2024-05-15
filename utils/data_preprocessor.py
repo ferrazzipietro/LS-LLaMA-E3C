@@ -7,19 +7,8 @@ import warnings
 class DataPreprocessor():
 
 
-    def __init__(self, model_checkpoint:str, token_llama:str='') -> None:
-
-        self.offset = None
-        self.instruction_on_response_format = ''
-        self.n_shots = None
-        #self.model_type = model_checkpoint.split('/')[1].lower().split('-')[0]
-        self.model_type = 'qwen' if model_checkpoint.split('/')[0] == 'Qwen' else model_checkpoint.split('/')[1].lower().split('-')[0]
-        if model_checkpoint =='NotRelevant': self.model_type = 'llama'
-        # if self.model_type == 'zefiro':
-        #     self.model_type  = 'mistral'
-        if self.model_type not in ['mistral', 'llama', 'gemma', 'qwen', 'zefiro']:
-            raise ValueError("The model type must be either 'mistral', 'llama', 'gemma', 'zefiro' or 'qwen'")
-
+    def __init__(self) -> None:
+        pass
         
     def split_layer_into_train_val_test_(self, dataset: Dataset, split_name: str, test_subset_of_validation: bool=False, input_column:str='prompt') -> (Dataset, Dataset):
         """

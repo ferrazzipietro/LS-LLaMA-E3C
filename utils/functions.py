@@ -65,8 +65,11 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
-    preprocessor = DataPreprocessor('NotRelevant', 
-                                    tokenizer)
+    peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
+    BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
+    tokenizer.pad_token = tokenizer.eos_token
+    print('PREPROCESSING DATA...')
     dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
     dataset = dataset[TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  
@@ -79,11 +82,13 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     dataset_format_converter.set_tokenizer(tokenizer)
     dataset_format_converter.set_max_seq_length(256)
     tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)
+    preprocessor = DataPreprocessor()
     _, data, _ = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+    print('PREPROCESSING DATA...DONE')
     
     for adapters in adapters_list:
         model_type = 'llama' if 'llama' in adapters.lower() else 'mistral'
-        print('preprocessing data and loading model with adapters:', adapters)
+        print('loading model with adapters:', adapters)
         if model_type == 'llama':
             ModelForTokenClassification = LlamaForTokenClassification
         elif model_type == 'mistral':
@@ -92,10 +97,7 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
             raise ValueError('Model type not recognized')
         peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
         BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-
-        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
-        tokenizer.pad_token = tokenizer.eos_token
-        base_model = ModelForTokenClassification.from_pretrained(
+        model = ModelForTokenClassification.from_pretrained(
             peft_config.base_model_name_or_path,
             num_labels=len(label2id), id2label=id2label, label2id=label2id,
             token = HF_TOKEN_WRITE,
