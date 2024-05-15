@@ -63,6 +63,7 @@ class Evaluator():
         """
         counter = 0
         tot_tokens = 0
+        print('(token, prediction, ground_truth_label)')
         for example in self.data:
             sentence_pred = example['predictions']
             sentence = example['sentence']

@@ -121,7 +121,7 @@ class DatasetFormatConverter():
 
     def tokenize_and_align_labels(self, examples):
         tokenized_inputs = self.tokenizer(examples["tokens"], truncation=True, is_split_into_words=True, add_special_tokens=False)
-
+        print("tokenized_inputs: ", tokenized_inputs)
         labels = []
         for i, words_label in enumerate(examples[f"ner_tags"]):
             word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.

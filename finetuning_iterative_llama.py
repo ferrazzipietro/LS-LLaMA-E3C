@@ -19,9 +19,9 @@ import torch
 from tqdm.auto import tqdm
 
 from utils.data_preprocessor import DataPreprocessor
-from utils import dataset_format_converter
-import importlib
-importlib.reload(dataset_format_converter)
+from utils import data_format_converter
+# import importlib
+# importlib.reload(dataset_format_converter)
 
 #from src.billm import MistralForTokenClassification
 from src.billm import LlamaForTokenClassification
@@ -223,7 +223,7 @@ if __name__ == "__main__":
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[config.TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-    dataset_format_converter_obj = dataset_format_converter.DatasetFormatConverter(dataset)
+    dataset_format_converter_obj = data_format_converter.DatasetFormatConverter(dataset)
     dataset_format_converter_obj.apply()
     ds = dataset_format_converter_obj.dataset
     label2id = dataset_format_converter_obj.label2id
