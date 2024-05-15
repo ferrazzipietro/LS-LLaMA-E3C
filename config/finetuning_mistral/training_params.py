@@ -1,5 +1,5 @@
 ### TrainingArguments
-num_train_epochs= 8
+num_train_epochs= 3
 per_device_train_batch_size= 8
 gradient_accumulation_steps= [2,4,8] # reduce the number to finish faster
 optim = "paged_adamw_8bit"
@@ -13,16 +13,16 @@ warmup_ratio= 0.3
 group_by_length= True
 lr_scheduler_type= "constant"
 
-logging_steps=2
+logging_steps=20
 logging_strategy="steps"
 evaluation_strategy= "steps"
 save_strategy=evaluation_strategy
-save_steps= 10
+save_steps= 20
 eval_steps=save_steps
 greater_is_better=False
-metric_for_best_model="eval_loss"
+metric_for_best_model="loss"
 save_total_limit = 1
-load_best_model_at_end = True
+load_best_model_at_end = False#True
 
 ### SFTTrainer
 """

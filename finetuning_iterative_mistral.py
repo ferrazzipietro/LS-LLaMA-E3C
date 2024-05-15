@@ -261,7 +261,7 @@ if __name__ == "__main__":
                             extra_str = "simplest_prompt_"
                         else:
                             extra_str = ""
-                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}"
+                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_nEpochs{training_params.num_train_epochs}"
                         main(ADAPTERS_CHECKPOINT,
                             # load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold,
                             r, lora_alpha, lora_dropout,
