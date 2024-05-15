@@ -21,6 +21,7 @@ from utils.data_format_converter import  DatasetFormatConverter
 from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
+batch_size = 64
 
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
@@ -131,8 +132,6 @@ base_model = ModelForTokenClassification.from_pretrained(
 print('LOADING MODEL...DONE')
 
 
-batch_size = 2
-
 for adapters in adapters_list:
     
     peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
@@ -142,7 +141,7 @@ for adapters in adapters_list:
     model = model.merge_and_unload()
     print('DONE')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
-    test_data = generator.generate(data.select(range(4)), batch_size = batch_size)
+    test_data = generator.generate(data, batch_size = batch_size)
     print(test_data)
     test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
     del model
