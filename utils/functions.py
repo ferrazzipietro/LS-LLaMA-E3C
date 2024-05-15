@@ -109,5 +109,6 @@ def generate_model_predictions(adapters_list: 'list[str]'):
         generator = OutputGenerator(model, tokenizer, label2id, label_list)
         test_data = generator.generate(data, batch_size = 64)
         print(test_data)
-        test_data.push_to_hub(adapters + 'data', token=HF_TOKEN_WRITE)
+        test_data.push_to_hub(adapters + 'data', token=HF_TOKEN_WRITE, 
+                              split='test', )
 
