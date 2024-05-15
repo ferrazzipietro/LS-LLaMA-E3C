@@ -182,7 +182,7 @@ def main(ADAPTERS_CHECKPOINT,
         model=model,
         args=training_arguments,
         train_dataset=train_data,
-        eval_dataset=val_data,
+        eval_dataset=train_data# val_data,
         # dataset_text_field=training_params.dataset_text_field,
         # peft_config=lora_config,
         data_collator=data_collator,
@@ -266,7 +266,7 @@ if __name__ == "__main__":
                             extra_str = "simplest_prompt_"
                         else:
                             extra_str = ""
-                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_5Epochs"
+                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_5EpochsBestF1Train"
                         main(ADAPTERS_CHECKPOINT,
                             # load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold,
                             r, lora_alpha, lora_dropout,

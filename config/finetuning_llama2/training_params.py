@@ -20,9 +20,9 @@ save_strategy=evaluation_strategy
 save_steps= 20
 eval_steps=save_steps
 greater_is_better=True
-metric_for_best_model="loss"#"f1"
+metric_for_best_model="f1"
 save_total_limit = 1
-load_best_model_at_end = False#True
+load_best_model_at_end = True
 
 ### SFTTrainer
 """
