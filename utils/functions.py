@@ -71,17 +71,17 @@ def generate_model_predictions(adapters_list: 'list[str]'):
             ModelForTokenClassification = MistralForTokenClassification
         else:
             raise ValueError('Model type not recognized')
-        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN)
+        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
         BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 
-        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN)
+        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
         tokenizer.pad_token = tokenizer.eos_token
         # seqeval = evaluate.load("seqeval")
         DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
         TRAIN_LAYER="en.layer1"
         preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
                                         tokenizer)
-        dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+        dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
         dataset = dataset[TRAIN_LAYER]
         dataset = dataset.shuffle(seed=1234)  
         dataset_format_converter = DatasetFormatConverter(dataset)
@@ -98,12 +98,12 @@ def generate_model_predictions(adapters_list: 'list[str]'):
         model = ModelForTokenClassification.from_pretrained(
             peft_config.base_model_name_or_path,
             num_labels=len(label2id), id2label=id2label, label2id=label2id,
-            token = HF_TOKEN,
+            token = HF_TOKEN_WRITE,
             cache_dir='/data/disk1/share/pferrazzi/.cache',
             device_map='auto',
             # quantization_config = bnb_config
             )
-        model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN)
+        model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN_WRITE)
         model = model.merge_and_unload()
         print('DONE')
         generator = OutputGenerator(model, tokenizer, label2id, label_list)
