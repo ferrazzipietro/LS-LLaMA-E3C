@@ -33,27 +33,27 @@ seqeval = evaluate.load("seqeval")
 
 def compute_metrics(p):
     predictions, labels = p
-    print('predictions:\n',predictions)
-    print('size pred:',predictions.shape)
+    # print('predictions:\n',predictions)
+    # print('size pred:',predictions.shape)
 
-    print('labels:\n',labels)
-    print('labels pred:',labels.shape)
+    # print('labels:\n',labels)
+    # print('labels pred:',labels.shape)
     predictions = np.argmax(predictions, axis=2)
-    print('predictions:\n',predictions)
-    print('len(predictions[0]):\n',len(predictions[0]))
+    #print('predictions:\n',predictions)
+    #print('len(predictions[0]):\n',len(predictions[0]))
     true_predictions = [
         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
         for prediction, label in zip(predictions, labels)
     ]
-    print('true_predictions: ', true_predictions)
+    # print('true_predictions: ', true_predictions)
     true_labels = [
         [label_list[l] for (p, l) in zip(prediction, label) if l != -100]
         for prediction, label in zip(predictions, labels)
     ]
-    print('true_labels: ', true_labels)
+    # print('true_labels: ', true_labels)
 
     results = seqeval.compute(predictions=true_predictions, references=true_labels)
-    print(results)
+    # print(results)
     return {
         "precision": results["overall_precision"],
         "recall": results["overall_recall"],

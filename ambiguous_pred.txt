@@ -1,0 +1,42 @@
+
+                    The results  of  the    PCR     were   positive  for    RNA      specific  to                  SARS-CoV-2.
+                    --- -------  --  ---  -------   ----   --------  ---  -------    --------  --      -------------------------------------
+                    The results  of  the  PC    R   were   positive  for  R     NA   specific  to       S    AR   S    -   Co    V    -   2.
+predizione          'I',  'I',  'O', 'O', 'O', 'I',  'O',    'B',    'O', 'B',  'I',   'B',    'O',    'O', 'I', 'O', 'O', 'O', 'I', 'I', 'I'
+label               'O',  'O', 'O', 'B', 'I',  'O',    'B',    'O', 'O',  'O',   'O',    'O',    'B', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I'
+
+
+(token, prediction, ground_truth_label)
+
+('▁The', 'I', 'O'), ('▁results', 'I', 'O'), ('▁of', 'O', 'O'), ('▁the', 'O', 'B'), ('▁PC', 'O', 'I'), ('R', 'I', 'O'), ('▁were', 'O', 'B'), ('▁positive', 'B', 'O'), ('▁for', 'O', 'O'), ('▁R', 'B', 'O'), ('NA', 'I', 'O'), ('▁specific', 'B', 'O'), ('▁to', 'O', 'B'), ('▁S', 'O', 'I'), ('AR', 'I', 'I'), ('S', 'O', 'I'), ('-', 'O', 'I'), ('Co', 'O', 'I'), ('V', 'I', 'I'), ('-', 'I', 'I'), ('2', 'I', 'I')
+
+
+
+
+
+
+
+
+
+Twenty five days later, she returned to obstetric emergencies for significant bleeding with severe anemia with hemoglobin 9 g/dL without signs of hypovolemic shock.
+The problem are here: 
+    ('▁significant', 'B', 'B'), ('▁ble', 'B', 'I'), ('eding', 'B', 'O')
+    "<tkn 1>significant</tkn 1> <tkn 2>ble</tkn 2><tkn 3>ding</tkn 3>" is labeled as BBB, when it should be BIO (s)
+    ('▁hem', 'B', 'I'), ('og', 'I', 'I'), ('lo', 'I', 'I'), ('bin', 'B', 'B')
+    ('▁hyp', 'O', 'I'), ('ov', 'B', 'I'), ('ole', 'B', 'I'), ('mic', 'B', 'I'), ('▁shock', 'B', 'I')
+
+
+('▁Tw', 'I', 'I'), ('enty', 'I', 'I'), ('▁five', 'I', 'I'), ('▁days', 'B', 'I'), ('▁later', 'I', 'I'), (',', 'I', 'B'), ('▁she', 'B', 'B'), ('▁returned', 'B', 'O'), ('▁to', 'I', 'O'), ('▁obst', 'I', 'O'), ('et', 'I', 'O'), ('ric', 'I', 'O'), ('▁emer', 'B', 'O'), ('gen', 'I', 'O'), ('cies', 'B', 'O'), ('▁for', 'O', 'O'), ('▁significant', 'B', 'B'), ('▁ble', 'B', 'I'), ('eding', 'B', 'O'), ('▁with', 'O', 'B'), ('▁severe', 'O', 'I'), ('▁an', 'O', 'I'), ('emia', 'B', 'O'), ('▁with', 'O', 'B'), ('▁hem', 'B', 'I'), ('og', 'I', 'I'), ('lo', 'I', 'I'), ('bin', 'B', 'B'), ('▁', 'B', 'I'), ('9', 'B', 'I'), ('▁g', 'B', 'I'), ('/', 'B', 'I'), ('d', 'B', 'I'), ('L', 'B', 'O'), ('▁without', 'O', 'B'), ('▁signs', 'O', 'O'), ('▁of', 'O', 'B'), ('▁hyp', 'O', 'I'), ('ov', 'B', 'I'), ('ole', 'B', 'I'), ('mic', 'B', 'I'), ('▁shock', 'B', 'I')]
+
+
+
+
+
+'O',      'I',    'I',     'I',     'I',      'I',        'O',           'O',     'O', 'O',    'B',  'B', 'O',       'B',   'B', 'O',      'I', 'B',  'B',   'O',  'B',  'B',  'O',   'B',   'B',    'O', 'B',       'B',    'B',    'B',        'I',          'B', 'O',   'I',    'O',   'O',     'O',          'I', 'O',   'O',     'O',    'I',    'O', 'B',  'B',      'O',       'O',  'O',  'B',    'I',        'B',     'B'
+'O',      'O',    'O',     'O',     'O',      'O',        'O',           'O',     'O', 'B',    'I',  'I', 'B',       'I',   'I', 'B',      'I', 'I',  'I',   'B',  'I',  'I',  'I',   'I',   'O',    'O', 'O',       'O',    'O',    'O',        'O',          'O', 'O',   'O',    'O',   'O',     'O',          'O', 'B',   'I',     'I',    'O',    'O', 'O',  'O',      'O',       'B',  'I',  'I',    'O',        'O',     'O'
+'▁Res', 'iding', '▁in', '▁Middle', '▁East', '▁with', '▁background', '▁history', '▁of', '▁fe', 'ver', ',', '▁back', 'ache', ',', '▁skin', '▁r', 'ash', ',', '▁spl', 'en', 'om', 'eg', 'aly', '▁and', '▁a', '▁low', '▁plate', 'let', '▁count', '▁possibility', '▁of', '▁at', 'yp', 'ical', '▁in', 'fection', '▁like', '▁Bru', 'cell', 'osis', '▁with', '▁NS', 'A', 'ID', '▁induced', '▁gi', '▁ble', 'ed', '▁was', '▁considered', '.'
+
+problems:   
+    '▁Res', 'iding', '▁in' is OII
+    '▁fe', 'ver', is OB. It should be BI
+    '▁back', 'ache' is OB. It should be BI

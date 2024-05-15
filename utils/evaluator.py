@@ -8,7 +8,7 @@ class Evaluator():
         self.tokenizer = tokenizer
         
      
-    def _compare_prediction_label_one_example(self, example) -> (int, int, int):
+    def _compare_prediction_label_one_example_token_by_token(self, example) -> (int, int, int):
         """
         Compare the prediction with the label of one sentence.
         Args:
@@ -22,6 +22,7 @@ class Evaluator():
         predictions = example['predictions']
         labels = example['ground_truth_labels']
         TP, FP, FN = 0, 0, 0
+        # labels = ['O'] + labels[:-1] 
         for pred, lab in zip(predictions, labels):
             TP = TP + (1 if pred == lab and lab!='O' else 0)
             FP = FP + (1 if pred != lab and lab =='O' else 0)
@@ -32,7 +33,7 @@ class Evaluator():
 
         return example
     
-    def extract_FP_FN_TP(self) -> (int, int, int):
+    def extract_FP_FN_TP_token_by_token(self) -> (int, int, int):
         """
         Extract the number of False Positives, False Negatives and True Positives from the model output and the ground truth.
         Args:
@@ -43,7 +44,8 @@ class Evaluator():
         int: the number of false negatives
         int: the number of true positives
         """
-        self.data = self.data.map(self._compare_prediction_label_one_example, batched=False)
+        self.data = self.data.map(self._compare_prediction_label_one_example_token_by_token, batched=False)
+
 
     def create_evaluation_table(self):
         tmp_data = pd.DataFrame(self.data)
@@ -68,15 +70,15 @@ class Evaluator():
             sentence_pred = example['predictions']
             sentence = example['sentence']
             previous = '' 
-            append = False
+            appened = False
             for token in sentence_pred:
                 if token=='I' and previous=='O':
-                    append = True
+                    appened = True
                     counter+=1
                     # print('token:', token, 'previous:', previous, 'position:', i, 'sentence:', sentence_pred)
                 previous = token
                 tot_tokens += 1
-            if append:
-                tokenized_input = self.tokenizer(sentence)
+            if appened:
+                tokenized_input = self.tokenizer(sentence, add_special_tokens=False)
                 tokens = self.tokenizer.convert_ids_to_tokens(tokenized_input["input_ids"])
                 print([(t,p, ground_truth_label) for t, p, ground_truth_label in zip(tokens, sentence_pred, example['ground_truth_labels'])])

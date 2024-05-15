@@ -2,8 +2,7 @@
 
 from .modeling_llama import *  # NOQA
 # from .modeling_mistralbillm import *  # NOQA
-from .modeling_qwen2 import *  # NOQA
-from .modeling_mistral import *
+from .modeling_mistral import * # NOQA
 
 
 __version__ = '0.1.3'

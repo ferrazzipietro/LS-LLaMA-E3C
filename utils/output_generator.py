@@ -18,7 +18,7 @@ class OutputGenerator():
     #     return preds_list
 
     def _generate_batch(self, input_sentences):
-        encodeds = self.tokenizer(input_sentences, return_tensors="pt", add_special_tokens=True, padding=True)
+        encodeds = self.tokenizer(input_sentences, return_tensors="pt", add_special_tokens=False, padding=True)
         model_inputs = encodeds.to('cuda')
         generated_ids = self.model(**model_inputs)
         # preds = self._create_prediction_list(generated_ids)
@@ -75,4 +75,5 @@ class OutputGenerator():
         ground_truth_labels = Dataset.from_dict({"ground_truth_labels": labels})
         data = concatenate_datasets([data, predictions, ground_truth_labels], axis=1)
         return data
+
 
