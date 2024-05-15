@@ -119,7 +119,7 @@ for adapters in adapters_list:
         raise ValueError('Model type not recognized')
     peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
     BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-    model = ModelForTokenClassification.from_pretrained(
+    base_model = ModelForTokenClassification.from_pretrained(
         peft_config.base_model_name_or_path,
         num_labels=len(label2id), id2label=id2label, label2id=label2id,
         token = HF_TOKEN_WRITE,
@@ -127,7 +127,7 @@ for adapters in adapters_list:
         device_map='auto',
         # quantization_config = bnb_config
         )
-    model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN_WRITE)
+    model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE)
     model = model.merge_and_unload()
     print('DONE')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
@@ -135,5 +135,6 @@ for adapters in adapters_list:
     print(test_data)
     test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
     del model
+    del base_model
     gc.collect()
     torch.cuda.empty_cache()
