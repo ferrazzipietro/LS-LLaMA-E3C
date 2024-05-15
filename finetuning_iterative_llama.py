@@ -1,33 +1,31 @@
 # https://colab.research.google.com/github/adithya-s-k/LLM-Alchemy-Chamber/blob/main/LLMs/Mistral-7b/Mistral_Colab_Finetune_ipynb_Colab_Final.ipynb?source=post_page-----0f39647b20fe--------------------------------#scrollTo=acCr5AZ0831z
 
 import torch
+from huggingface_hub import login
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, DataCollatorForTokenClassification, TrainingArguments, Trainer
-from datasets import load_dataset
 from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model, TaskType
-import bitsandbytes as bnb
 from trl import SFTTrainer
-from dotenv import dotenv_values
 import wandb
-from utils.data_preprocessor import DataPreprocessor
 import datetime
 import gc
-from utils import DataPreprocessor, DatasetFormatConverter
 import evaluate
 import numpy as np
 import pandas as pd
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 from transformers.pipelines.pt_utils import KeyDataset
-from peft import PeftModel, PeftConfig
 from dotenv import dotenv_values
 import torch
 from tqdm.auto import tqdm
 
-from utils import DataPreprocessor, DatasetFormatConverter
+from utils.data_preprocessor import DataPreprocessor
+from utils import dataset_format_converter
+import importlib
+importlib.reload(dataset_format_converter)
+
 #from src.billm import MistralForTokenClassification
 from src.billm import LlamaForTokenClassification
 
-import string
 
 from config.finetuning_llama2 import training_params, lora_params, model_loading_params, config, preprocessing_params
 
@@ -225,15 +223,15 @@ if __name__ == "__main__":
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[config.TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-    dataset_format_converter = DatasetFormatConverter(dataset)
-    dataset_format_converter.apply()
-    ds = dataset_format_converter.dataset
-    label2id = dataset_format_converter.label2id
-    id2label = dataset_format_converter.get_id2label()
-    label_list = dataset_format_converter.get_label_list()
-    dataset_format_converter.set_tokenizer(tokenizer)
-    dataset_format_converter.set_max_seq_length(training_params.max_seq_length)
-    tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+    dataset_format_converter_obj = dataset_format_converter.DatasetFormatConverter(dataset)
+    dataset_format_converter_obj.apply()
+    ds = dataset_format_converter_obj.dataset
+    label2id = dataset_format_converter_obj.label2id
+    id2label = dataset_format_converter_obj.get_id2label()
+    label_list = dataset_format_converter_obj.get_label_list()
+    dataset_format_converter_obj.set_tokenizer(tokenizer)
+    dataset_format_converter_obj.set_max_seq_length(training_params.max_seq_length)
+    tokenized_ds = ds.map(lambda x: dataset_format_converter_obj.tokenize_and_align_labels(x), batched=True)# 
     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, config.TRAIN_LAYER)
     print(train_data[0]['labels'])
 
@@ -268,7 +266,7 @@ if __name__ == "__main__":
                             extra_str = "simplest_prompt_"
                         else:
                             extra_str = ""
-                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}"
+                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_3Epochs"
                         main(ADAPTERS_CHECKPOINT,
                             # load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold,
                             r, lora_alpha, lora_dropout,
