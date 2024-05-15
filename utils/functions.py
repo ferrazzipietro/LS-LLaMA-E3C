@@ -111,8 +111,7 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
         generator = OutputGenerator(model, tokenizer, label2id, label_list)
         test_data = generator.generate(data.select(range(4)), batch_size = batch_size)
         print(test_data)
-        test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, 
-                              split='test' )
+        test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
         del model
         gc.collect()
         torch.cuda.empty_cache()
