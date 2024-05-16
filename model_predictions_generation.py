@@ -22,7 +22,7 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
 batch_size = 64
-appendix = '5Epochs' # 5EpochsBestF1Train
+appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
 
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
