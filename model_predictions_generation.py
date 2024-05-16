@@ -65,17 +65,22 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32, trai
         if training_type != 'NoLora':
             peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
             BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-        model = ModelForTokenClassification.from_pretrained(
-            BASE_MODEL_CHECKPOINT,
-            num_labels=len(label2id), id2label=id2label, label2id=label2id,
-            token = HF_TOKEN_WRITE,
-            # cache_dir='/data/disk1/share/pferrazzi/.cache',
-            device_map='auto',
-            # quantization_config = bnb_config
-            )
-        if training_type != 'NoLora':
+            model = ModelForTokenClassification.from_pretrained(
+                BASE_MODEL_CHECKPOINT,
+                num_labels=len(label2id), id2label=id2label, label2id=label2id,
+                token = HF_TOKEN_WRITE,
+                # cache_dir='/data/disk1/share/pferrazzi/.cache',
+                device_map='auto',
+                # quantization_config = bnb_config
+                )
             model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN_WRITE)
             model = model.merge_and_unload()
+        else:
+            model = ModelForTokenClassification.from_pretrained(
+                adapters,
+                num_labels=len(label2id), id2label=id2label, label2id=label2id,
+                token = HF_TOKEN_WRITE,
+                device_map='auto')
         print('DONE')
         generator = OutputGenerator(model, tokenizer, label2id, label_list)
         test_data = generator.generate(data.select(range(4)), batch_size = batch_size)
@@ -130,14 +135,16 @@ elif model_type == 'mistral':
     ModelForTokenClassification = MistralForTokenClassification
 else:
     raise ValueError('Model type not recognized')
-base_model = ModelForTokenClassification.from_pretrained(
-    BASE_MODEL_CHECKPOINT,
-    num_labels=len(label2id), id2label=id2label, label2id=label2id,
-    token = HF_TOKEN_WRITE,
-    # cache_dir='/data/disk1/share/pferrazzi/.cache',
-    device_map='auto',
-    # quantization_config = bnb_config
-    )
+
+if training_type != 'NoLora':
+    base_model = ModelForTokenClassification.from_pretrained(
+        BASE_MODEL_CHECKPOINT,
+        num_labels=len(label2id), id2label=id2label, label2id=label2id,
+        token = HF_TOKEN_WRITE,
+        # cache_dir='/data/disk1/share/pferrazzi/.cache',
+        device_map='auto',
+        # quantization_config = bnb_config
+        )
 print('LOADING MODEL...DONE')
 
 
@@ -146,9 +153,14 @@ for adapters in adapters_list:
     if training_type != 'NoLora':
         peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
         BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-
-    model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE)
-    model = model.merge_and_unload()
+        model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE)
+        model = model.merge_and_unload()
+    else:
+        model = ModelForTokenClassification.from_pretrained(
+                adapters,
+                num_labels=len(label2id), id2label=id2label, label2id=label2id,
+                token = HF_TOKEN_WRITE,
+                device_map='auto')
     print('DONE')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
     test_data = generator.generate(data, batch_size = batch_size)
