@@ -25,6 +25,8 @@ batch_size = 64
 appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_5EpochsBestF1Train"
 training_type='NoLora' # ''
+
+
 if training_type == 'NoLora':
     BASE_MODEL_CHECKPOINT = "meta-llama/Llama-2-7b-hf"
 

@@ -40,6 +40,10 @@ def generate_adapters_list(log_run_name: str, appendix:str, training_type:str=''
                                 nbits = 8   
                             if not quantization:
                                 nbits = 'NoQuant'
-                            ADAPTERS_CHECKPOINT = f"ferrazzipietro/{training_type}LS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
+                            if training_type == 'NoLora':
+                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/noLoraLS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
+
+                            else:
+                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/{training_type}LS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
                             adapters_list.append(ADAPTERS_CHECKPOINT)
     return adapters_list
