@@ -14,7 +14,7 @@ login(token=HF_TOKEN_WRITE)
 
 
 appendix = '5Epochs' # 5EpochsBestF1Train
-model_type ='llama'
+log_name_training ='llama_5EpochsBestF1Train'
 
 def extract_params_from_file_name(df: pd.DataFrame):
     df['model_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[1]))
@@ -30,7 +30,7 @@ def extract_params_from_file_name(df: pd.DataFrame):
     df['run_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[10]))
     return df
 
-datasets_list = generate_adapters_list(model_type, appendix=appendix)
+datasets_list = generate_adapters_list(log_name_training, appendix=appendix)
 peft_config = PeftConfig.from_pretrained(datasets_list[0], token = HF_TOKEN_WRITE)
 BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)

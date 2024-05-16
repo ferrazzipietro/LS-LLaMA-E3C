@@ -23,6 +23,7 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 batch_size = 64
 appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
+log_name_training = "llama_5EpochsBestF1Train"
 
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
@@ -89,7 +90,7 @@ torch.cuda.empty_cache()
 print('PREPROCESSING DATA...')
 DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
 TRAIN_LAYER="en.layer1"
-adapters_list = generate_adapters_list('llama', appendix=appendix)
+adapters_list = generate_adapters_list(log_name_training, appendix=appendix)
 peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
 BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
