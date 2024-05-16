@@ -1,13 +1,13 @@
 #!/bin/bash -l
 ### job name
-#SBATCH --job-name=generate_model_predictions
+#SBATCH --job-name=model_predictions_generation
 
 ### 
 #SBATCH --mail-user=ferrazzi@math.unipd.it
 
 ### Standard output and standard error for our job
-#SBATCH --error=generate_model_predictions.err
-#SBATCH --output=generate_model_predictions.out
+#SBATCH --error=model_predictions_generation.err
+#SBATCH --output=model_predictions_generation.out
 
 ### queue/partition choosed
 #SBATCH --partition=testing
@@ -41,6 +41,6 @@ conda activate gpu_venv_lates
 which python
 export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512'
 
-python  generate_model_predictions.py
+python  model_predictions_generation.py
 echo -n 'Date: '
 date
