@@ -25,12 +25,15 @@ batch_size = 64
 appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_5EpochsBestF1Train"
 training_type='NoLora' # ''
+if training_type == 'NoLora':
+    BASE_MODEL_CHECKPOINT = "meta-llama/Llama-2-7b-hf"
 
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32, training_type=''):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
-    peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
-    BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+    if training_type != 'NoLora':
+        peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
+        BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
     tokenizer.pad_token = tokenizer.eos_token
     print('PREPROCESSING DATA...')
@@ -59,10 +62,11 @@ def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32, trai
             ModelForTokenClassification = MistralForTokenClassification
         else:
             raise ValueError('Model type not recognized')
-        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
-        BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+        if training_type != 'NoLora':
+            peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
+            BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
         model = ModelForTokenClassification.from_pretrained(
-            peft_config.base_model_name_or_path,
+            BASE_MODEL_CHECKPOINT,
             num_labels=len(label2id), id2label=id2label, label2id=label2id,
             token = HF_TOKEN_WRITE,
             # cache_dir='/data/disk1/share/pferrazzi/.cache',
@@ -93,8 +97,9 @@ print('PREPROCESSING DATA...')
 DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
 TRAIN_LAYER="en.layer1"
 adapters_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type)
-peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
-BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+if training_type != 'NoLora':
+    peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
+    BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
 tokenizer.pad_token = tokenizer.eos_token
 dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
@@ -138,8 +143,9 @@ print('LOADING MODEL...DONE')
 
 for adapters in adapters_list:
     print('GENERATING:', adapters, '...')
-    peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
-    BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+    if training_type != 'NoLora':
+        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
+        BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 
     model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE)
     model = model.merge_and_unload()
