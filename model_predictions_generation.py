@@ -150,7 +150,7 @@ if training_type != 'NoLora':
 print('LOADING MODEL...DONE')
 
 
-for adapters in adapters_list:
+for adapters in adapters_list[1:]:
     print('GENERATING:', adapters, '...')
     if training_type != 'NoLora':
         peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
