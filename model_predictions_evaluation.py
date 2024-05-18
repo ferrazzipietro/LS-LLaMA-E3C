@@ -17,18 +17,26 @@ appendix = '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training ='noLora_llama_5EpochsBestF1Train'
 training_type = 'NoLora' # ''
 
-def extract_params_from_file_name(df: pd.DataFrame):
-    df['model_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[1]))
-    df['training_config'] = df['dataset'].apply(lambda x: str(x.split('adapters_')[1]))
-    df['layer'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[3]))
-    df['quantization'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[4]))
-    df['quantization'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[4]))
-    df['r'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[5]))
-    df['lora_alpha'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[6]))
-    df['lora_dropout'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[7]))
-    df['gradient_accumulation_steps'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[8]))
-    df['learning_rate'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[9]))
-    df['run_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[10]))
+def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
+    if training_type == 'NoLora':
+        df['model_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[1]))
+        df['training_config'] = df['dataset'].apply(lambda x: str(x.split('adapters_')[1]))
+        df['layer'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[3]))
+        df['quantization'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[4]))
+        df['gradient_accumulation_steps'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[5]))
+        df['learning_rate'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[6]))
+        df['run_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[7]))
+    else:        
+        df['model_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[1]))
+        df['training_config'] = df['dataset'].apply(lambda x: str(x.split('adapters_')[1]))
+        df['layer'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[3]))
+        df['quantization'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[4]))
+        df['r'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[5]))
+        df['lora_alpha'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[6]))
+        df['lora_dropout'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[7]))
+        df['gradient_accumulation_steps'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[8]))
+        df['learning_rate'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[9]))
+        df['run_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[10]))
     return df
 
 datasets_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type)
@@ -51,6 +59,6 @@ for i, dataset_checkpoint in enumerate(datasets_list):
 
 print(evaluation_table)
 evaluation_table#.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
-evaluation_table = extract_params_from_file_name(evaluation_table)
-evaluation_table.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
-print(f'SAVED TO data/evaluation_table{appendix}.csv')
+evaluation_table = extract_params_from_file_name(evaluation_table, training_type=training_type)
+evaluation_table.to_csv(f'data/evaluation_table{training_type}_{appendix}.csv', index=False)
+print(f'SAVED TO data/evaluation_table{training_type}_{appendix}.csv')

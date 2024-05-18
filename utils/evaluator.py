@@ -66,6 +66,7 @@ class Evaluator():
         counter = 0
         tot_tokens = 0
         print('(token, prediction, ground_truth_label)')
+        self.disallined_df = pd.DataFrame(columns=['token', 'prediction', 'ground_truth_label'])
         for example in self.data:
             sentence_pred = example['predictions']
             sentence = example['sentence']
@@ -81,4 +82,5 @@ class Evaluator():
             if appened:
                 tokenized_input = self.tokenizer(sentence, add_special_tokens=False)
                 tokens = self.tokenizer.convert_ids_to_tokens(tokenized_input["input_ids"])
-                print([(t,p, ground_truth_label) for t, p, ground_truth_label in zip(tokens, sentence_pred, example['ground_truth_labels'])])
+                self.disallined_df = pd.concat([self.disallined_df, pd.DataFrame([(t,p, ground_truth_label) for t, p, ground_truth_label in zip(tokens, sentence_pred, example['ground_truth_labels'])])])
+                # print([(t,p, ground_truth_label) for t, p, ground_truth_label in zip(tokens, sentence_pred, example['ground_truth_labels'])])
