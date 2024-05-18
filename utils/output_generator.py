@@ -35,8 +35,7 @@ class OutputGenerator():
         try:
             predictions=generation_output.logits.cpu().detach().numpy()
         except TypeError:
-            predictions=generation_output.logits.cpu().float().numpy().astype(ml_dtypes.bfloat16)
-        predictions=generation_output.logits.cpu().detach().numpy()
+            predictions=generation_output.logits.cpu().detach().float().numpy().astype(ml_dtypes.bfloat16)
         predictions = np.argmax(predictions, axis=2)
         #print('predictions:\n',predictions)
         #print('len(predictions[0]):\n',len(predictions[0]))
