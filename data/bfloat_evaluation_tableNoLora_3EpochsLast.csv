@@ -1,0 +1,4 @@
+dataset,TP,FP,FN,precision,recall,f1,model_type,training_config,layer,quantization,gradient_accumulation_steps,learning_rate,run_type
+ferrazzipietro/noLoraLS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_8_0.0002_3EpochsLast,6546,3468,2855,0.6536848412222888,0.6963089033081588,0.6743239763069792,Llama-2-7b-hf,en.layer1_NoQuant_8_0.0002_3EpochsLast,en.layer1,NoQuant,8,0.0002,3EpochsLast
+ferrazzipietro/noLoraLS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_4_0.0002_3EpochsLast,6559,3471,2847,0.653938185443669,0.6973208590261535,0.6749331138094258,Llama-2-7b-hf,en.layer1_NoQuant_4_0.0002_3EpochsLast,en.layer1,NoQuant,4,0.0002,3EpochsLast
+ferrazzipietro/noLoraLS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_2_0.0002_3EpochsLast,6544,3462,2856,0.6540075954427343,0.6961702127659575,0.6744305884777904,Llama-2-7b-hf,en.layer1_NoQuant_2_0.0002_3EpochsLast,en.layer1,NoQuant,2,0.0002,3EpochsLast

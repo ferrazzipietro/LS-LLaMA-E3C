@@ -14,8 +14,8 @@ login(token=HF_TOKEN_WRITE)
 
 
 appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training ='llama_3EpochsLast'
-training_type = '' # 'NoLora' # ''
+log_name_training ='noLora_llama_3EpochsLast'
+training_type = 'NoLora' # ''
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
     if training_type == 'NoLora':
