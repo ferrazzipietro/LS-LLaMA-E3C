@@ -13,9 +13,9 @@ HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
 login(token=HF_TOKEN_WRITE)
 
 
-appendix = '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training ='noLora_llama_5EpochsBestF1Train'
-training_type = 'NoLora' # ''
+appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
+log_name_training ='llama_3EpochsLast'
+training_type = '' # 'NoLora' # ''
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
     if training_type == 'NoLora':
@@ -60,5 +60,5 @@ for i, dataset_checkpoint in enumerate(datasets_list):
 print(evaluation_table)
 evaluation_table#.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
 evaluation_table = extract_params_from_file_name(evaluation_table, training_type=training_type)
-evaluation_table.to_csv(f'data/evaluation_table{training_type}_{appendix}.csv', index=False)
-print(f'SAVED TO data/evaluation_table{training_type}_{appendix}.csv')
+evaluation_table.to_csv(f'data/bfloat_evaluation_table{training_type}_{appendix}.csv', index=False)
+print(f'SAVED TO data/bfloat_evaluation_table{training_type}_{appendix}.csv')

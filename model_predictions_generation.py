@@ -17,9 +17,9 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 batch_size = 32 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
 appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training = "llama_3EpochsLast"#"noLora_3EpochsLast"
+log_name_training = "noLora_3EpochsLast" # "llama_3EpochsLast"
 
-training_type= ''#'NoLora' # ''
+training_type= 'NoLora'#'NoLora' # ''
 
 
 if training_type == 'NoLora':
@@ -100,7 +100,6 @@ for adapters in adapters_list: #[1:]:
                 num_labels=len(label2id), id2label=id2label, label2id=label2id,
                 token = HF_TOKEN_WRITE,
                 device_map='auto')
-    print('DONE')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
     test_data = generator.generate(data, batch_size = batch_size)
     test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
