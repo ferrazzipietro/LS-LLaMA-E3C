@@ -22,13 +22,15 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
 batch_size = 64
-appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
+appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_5EpochsBestF1Train"
-training_type='NoLora' # ''
+training_type= '' # 'NoLora' # ''
 
 
 if training_type == 'NoLora':
     BASE_MODEL_CHECKPOINT = "meta-llama/Llama-2-7b-hf"
+else:
+    pass # it will be assigned based on the adapters
 
 def generate_model_predictions(adapters_list: 'list[str]', batch_size = 32, training_type=''):
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
@@ -150,7 +152,7 @@ if training_type != 'NoLora':
 print('LOADING MODEL...DONE')
 
 
-for adapters in adapters_list[2:]:
+for adapters in adapters_list: #[1:]:
     print('GENERATING:', adapters, '...')
     if training_type != 'NoLora':
         peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
