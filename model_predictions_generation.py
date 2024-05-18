@@ -169,7 +169,6 @@ for adapters in adapters_list: #[1:]:
     print('DONE')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
     test_data = generator.generate(data, batch_size = batch_size)
-    print(test_data)
     test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
     print('GENERATING:', adapters, '...DONE')
     del model

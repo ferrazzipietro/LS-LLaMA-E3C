@@ -13,8 +13,8 @@ HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
 login(token=HF_TOKEN_WRITE)
 
 
-appendix = '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training ='llama_5EpochsBestF1Train'
+appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
+log_name_training ='llama_3EpochsLast'
 
 def extract_params_from_file_name(df: pd.DataFrame):
     df['model_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[1]))
