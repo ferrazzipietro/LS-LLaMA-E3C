@@ -1,6 +1,8 @@
 from datasets import Dataset, concatenate_datasets
 import numpy as np
 from tqdm import tqdm
+import ml_dtypes
+
 
 class OutputGenerator():
     def __init__(self, model, tokenizer, label2id, label_list):
@@ -30,10 +32,11 @@ class OutputGenerator():
             
 
     def _format_predictions_and_labels(self, generation_output, padded_labels):
-        if generation_output.logits.is_cuda:
-            predictions=generation_output.logits.detach().numpy()
-        else:
+        try:
             predictions=generation_output.logits.cpu().detach().numpy()
+        except TypeError:
+            predictions=generation_output.logits.cpu().float().numpy().astype(ml_dtypes.bfloat16)
+        predictions=generation_output.logits.cpu().detach().numpy()
         predictions = np.argmax(predictions, axis=2)
         #print('predictions:\n',predictions)
         #print('len(predictions[0]):\n',len(predictions[0]))
