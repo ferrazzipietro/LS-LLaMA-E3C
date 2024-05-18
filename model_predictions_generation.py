@@ -21,7 +21,7 @@ from utils.data_format_converter import  DatasetFormatConverter
 from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
-batch_size = 64
+batch_size = 12
 appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_5EpochsBestF1Train"
 training_type= '' # 'NoLora' # ''
