@@ -30,7 +30,10 @@ class OutputGenerator():
             
 
     def _format_predictions_and_labels(self, generation_output, padded_labels):
-        predictions=generation_output.logits.cpu().detach().numpy()
+        if generation_output.logits.is_cuda:
+            predictions=generation_output.logits.detach().numpy()
+        else:
+            predictions=generation_output.logits.cpu().detach().numpy()
         predictions = np.argmax(predictions, axis=2)
         #print('predictions:\n',predictions)
         #print('len(predictions[0]):\n',len(predictions[0]))
