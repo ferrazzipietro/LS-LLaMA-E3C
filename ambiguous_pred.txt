@@ -1,52 +1,101 @@
-
-                    The results  of  the    PCR     were   positive  for    RNA      specific  to                  SARS-CoV-2.
-                    --- -------  --  ---  -------   ----   --------  ---  -------    --------  --      -------------------------------------
-                    The results  of  the  PC    R   were   positive  for  R     NA   specific  to       S    AR   S    -   Co    V    -   2.
-predizione          'I',  'I',  'O', 'O', 'O', 'I',  'O',    'B',    'O', 'B',  'I',   'B',    'O',    'O', 'I', 'O', 'O', 'O', 'I', 'I', 'I'
-label               'O',  'O', 'O', 'B', 'I',  'O',    'B',    'O', 'O',  'O',   'O',    'O',    'B', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I'
-
-
-(token, prediction, ground_truth_label)
-
-('▁The', 'I', 'O'), ('▁results', 'I', 'O'), ('▁of', 'O', 'O'), ('▁the', 'O', 'B'), ('▁PC', 'O', 'I'), ('R', 'I', 'O'), ('▁were', 'O', 'B'), ('▁positive', 'B', 'O'), ('▁for', 'O', 'O'), ('▁R', 'B', 'O'), ('NA', 'I', 'O'), ('▁specific', 'B', 'O'), ('▁to', 'O', 'B'), ('▁S', 'O', 'I'), ('AR', 'I', 'I'), ('S', 'O', 'I'), ('-', 'O', 'I'), ('Co', 'O', 'I'), ('V', 'I', 'I'), ('-', 'I', 'I'), ('2', 'I', 'I')
-
-
-
-
-
-
-
-
-
-Twenty five days later, she returned to obstetric emergencies for significant bleeding with severe anemia with hemoglobin 9 g/dL without signs of hypovolemic shock.
-The problem are here: 
-    ('▁significant', 'B', 'B'), ('▁ble', 'B', 'I'), ('eding', 'B', 'O')
-    "<tkn 1>significant</tkn 1> <tkn 2>ble</tkn 2><tkn 3>ding</tkn 3>" is labeled as BBB, when it should be BIO (s)
-    ('▁hem', 'B', 'I'), ('og', 'I', 'I'), ('lo', 'I', 'I'), ('bin', 'B', 'B')
-    ('▁hyp', 'O', 'I'), ('ov', 'B', 'I'), ('ole', 'B', 'I'), ('mic', 'B', 'I'), ('▁shock', 'B', 'I')
-
-
-('▁Tw', 'I', 'I'), ('enty', 'I', 'I'), ('▁five', 'I', 'I'), ('▁days', 'B', 'I'), ('▁later', 'I', 'I'), (',', 'I', 'B'), ('▁she', 'B', 'B'), ('▁returned', 'B', 'O'), ('▁to', 'I', 'O'), ('▁obst', 'I', 'O'), ('et', 'I', 'O'), ('ric', 'I', 'O'), ('▁emer', 'B', 'O'), ('gen', 'I', 'O'), ('cies', 'B', 'O'), ('▁for', 'O', 'O'), ('▁significant', 'B', 'B'), ('▁ble', 'B', 'I'), ('eding', 'B', 'O'), ('▁with', 'O', 'B'), ('▁severe', 'O', 'I'), ('▁an', 'O', 'I'), ('emia', 'B', 'O'), ('▁with', 'O', 'B'), ('▁hem', 'B', 'I'), ('og', 'I', 'I'), ('lo', 'I', 'I'), ('bin', 'B', 'B'), ('▁', 'B', 'I'), ('9', 'B', 'I'), ('▁g', 'B', 'I'), ('/', 'B', 'I'), ('d', 'B', 'I'), ('L', 'B', 'O'), ('▁without', 'O', 'B'), ('▁signs', 'O', 'O'), ('▁of', 'O', 'B'), ('▁hyp', 'O', 'I'), ('ov', 'B', 'I'), ('ole', 'B', 'I'), ('mic', 'B', 'I'), ('▁shock', 'B', 'I')]
+The patient was sent home with prednisone and cyclosporine, He was placed on the list of bone marrow transplantation (BMT).
+[('▁The', 'O', 'B'), 
+('▁patient', 'I', 'I'), 
+('▁was', 'O', 'O'), 
+('▁sent', 'B', 'O'), 
+('▁home', 'O', 'B'), 
+('▁with', 'O', 'O'), 
+('▁pred', 'O', 'B'), ('nis', 'O', 'I'), ('one', 'O', 'I'), 
+('▁and', 'O', 'O'), 
+('▁cy', 'O', 'B'), ('clos', 'O', 'I'), ('por', 'O', 'I'), ('ine', 'O', 'I'), (',', 'O', 'I'), 
+('▁He', 'O', 'B'), 
+('▁was', 'O', 'O'), 
+('▁placed', 'O', 'B'), 
+('▁on', 'O', 'O'), 
+('▁the', 'O', 'O'), 
+('▁list', 'O', 'O'), 
+('▁of', 'O', 'O'), 
+('▁b', 'O', 'O'), ('one', 'O', 'O'), 
+('▁mar', 'O', 'O'), ('row', 'O', 'O'), 
+('▁trans', 'O', 'O'), ('plant', 'O', 'O'), ('ation', 'O', 'O'), 
+('▁(', 'O', 'O'), ('B', 'O', 'O'), ('MT', 'O', 'O'), (').', 'O', 'O')]
 
 
 
+An immunohistochemical staining panel was done to determine the nature of this inflammatory infiltrate by using antibodies S-100, CD1a, CD-68 and CD45RO that were positive.
+[('▁An', 'O', 'O'), 
+('▁imm', 'O', 'O'), ('un', 'O', 'O'), ('oh', 'O', 'O'), ('ist', 'O', 'O'), ('och', 'O', 'O'), ('em', 'O', 'O'), ('ical', 'O', 'O'), 
+('▁st', 'B', 'O'), ('aining', 'I', 'O'), 
+('▁panel', 'O', 'B'), 
+('▁was', 'O', 'O'), 
+('▁done', 'O', 'O'), 
+('▁to', 'O', 'O'), 
+('▁determine', 'O', 'B'), 
+('▁the', 'O', 'O'), 
+('▁nature', 'O', 'O'), 
+('▁of', 'O', 'O'), 
+('▁this', 'O', 'O'), 
+('▁infl', 'O', 'B'), ('am', 'O', 'I'), ('mat', 'O', 'I'), ('ory', 'O', 'I'), 
+('▁in', 'O', 'I'), ('fil', 'I', 'I'), ('tr', 'I', 'I'), ('ate', 'I', 'I'), 
+('▁by', 'O', 'O'), 
+('▁using', 'O', 'O'), 
+('▁ant', 'O', 'O'), ('ib', 'O', 'O'), ('od', 'O', 'O'), ('ies', 'O', 'O'), 
+('▁S', 'O', 'B'), ('-', 'O', 'I'), ('1', 'O', 'I'), ('0', 'O', 'I'), ('0', 'O', 'I'), (',', 'O', 'I'), 
+('▁CD', 'O', 'B'), ('1', 'O', 'I'), ('a', 'O', 'I'), (',', 'O', 'I'), 
+('▁CD', 'O', 'B'), ('-', 'O', 'I'), ('6', 'O', 'I'), ('8', 'O', 'I'), 
+('▁and', 'O', 'O'), 
+('▁CD', 'O', 'B'), ('4', 'O', 'I'), ('5', 'O', 'I'), ('RO', 'O', 'I'), 
+('▁that', 'O', 'O'), 
+('▁were', 'O', 'O'), 
+('▁positive', 'O', 'B'), ('.', 'O', 'I')]
+
+
+Un'idea può essere: il modello va male sui termini medici compositi. Troviamoli
 
 
 
 
-'O',      'I',    'I',     'I',     'I',      'I',        'O',           'O',     'O', 'O',    'B',  'B', 'O',       'B',   'B', 'O',      'I', 'B',  'B',   'O',  'B',  'B',  'O',   'B',   'B',    'O', 'B',       'B',    'B',    'B',        'I',          'B', 'O',   'I',    'O',   'O',     'O',          'I', 'O',   'O',     'O',    'I',    'O', 'B',  'B',      'O',       'O',  'O',  'B',    'I',        'B',     'B'
-'O',      'O',    'O',     'O',     'O',      'O',        'O',           'O',     'O', 'B',    'I',  'I', 'B',       'I',   'I', 'B',      'I', 'I',  'I',   'B',  'I',  'I',  'I',   'I',   'O',    'O', 'O',       'O',    'O',    'O',        'O',          'O', 'O',   'O',    'O',   'O',     'O',          'O', 'B',   'I',     'I',    'O',    'O', 'O',  'O',      'O',       'B',  'I',  'I',    'O',        'O',     'O'
-'▁Res', 'iding', '▁in', '▁Middle', '▁East', '▁with', '▁background', '▁history', '▁of', '▁fe', 'ver', ',', '▁back', 'ache', ',', '▁skin', '▁r', 'ash', ',', '▁spl', 'en', 'om', 'eg', 'aly', '▁and', '▁a', '▁low', '▁plate', 'let', '▁count', '▁possibility', '▁of', '▁at', 'yp', 'ical', '▁in', 'fection', '▁like', '▁Bru', 'cell', 'osis', '▁with', '▁NS', 'A', 'ID', '▁induced', '▁gi', '▁ble', 'ed', '▁was', '▁considered', '.'
+BAD PRECISION
+A new genetic variant c.662G > C (p.W221S) in the SERPINC1 gene was detected in proband and affected father but was absent in healthy sister.
+[('▁A', 'O', 'O'), 
+('▁new', 'O', 'O'), 
+('▁gen', 'O', 'O'), ('etic', 'O', 'O'), 
+('▁variant', 'O', 'O'), 
+('▁c', 'B', 'O'), ('.', 'O', 'O'), ('6', 'I', 'O'), ('6', 'I', 'O'), ('2', 'I', 'O'), ('G', 'O', 'O'), ('\u2009', 'I', 'O'), ('>', 'I', 'O'), ('\u2009', 'I', 'O'), ('C', 'O', 'O'), 
+('▁(', 'B', 'O'), ('p', 'I', 'O'), ('.', 'I', 'O'), ('W', 'B', 'O'), ('2', 'I', 'O'), ('2', 'O', 'O'), ('1', 'O', 'O'), ('S', 'O', 'O'), (')', 'O', 'O'), 
+('▁in', 'O', 'O'), 
+('▁the', 'O', 'O'), 
+('▁SER', 'O', 'O'), ('P', 'O', 'O'), ('IN', 'O', 'O'), ('C', 'O', 'O'), ('1', 'O', 'O'), 
+('▁gene', 'O', 'B'), 
+('▁was', 'O', 'O'), 
+('▁detected', 'O', 'O'), 
+('▁in', 'O', 'O'), 
+('▁prob', 'B', 'O'), ('and', 'I', 'B'), 
+('▁and', 'O', 'I'), 
+('▁affected', 'I', 'O'), 
+('▁father', 'I', 'O'), 
+('▁but', 'O', 'B'), 
+('▁was', 'O', 'O'), 
+('▁absent', 'B', 'B'), 
+('▁in', 'O', 'I'), 
+('▁health', 'B', 'I'), ('y', 'O', 'I')]
 
-problems:   
-    '▁Res', 'iding', '▁in' is OII
-    '▁fe', 'ver', is OB. It should be BI
-    '▁back', 'ache' is OB. It should be BI
 
 
-
-
-
-predictions           ['O',      'I',    'O',     'I',      'I',      'O',      'O',           'I',     'O',   'B',  'I',    'I',  'B',   'I',    'I',   'O',    'O', 'I',   'I',   'O',   'I',  'O',  'I', 'I',     'O',  'B',  'O',     'O',      'I',     'I',      'O',          'O',   'O',  'O',   'I',    'I',     'I',      'I',     'O',   'I',     'I',     'O',   'O',  'O', 'O',     'O',      'B',    'B',  'I',   'O',       'O',       'B']
-ground_truth_labels   ['O',      'O',    'O',     'O',      'O',      'O',      'O',           'O',     'O',   'B',  'I',    'I',  'B',   'I',    'I',   'B',    'I', 'I',   'I',   'B',   'I',  'I',  'I', 'I',     'O',  'O',  'O',     'O',      'O',     'O',      'O',          'O',   'O',  'O',   'O',    'O',     'O',      'O',     'B',   'I',     'I',     'O',   'O',  'O', 'O',     'O',      'B',    'I',  'I',   'O',       'O',       'O']
-                      ['▁Res', 'iding', '▁in', '▁Middle', '▁East', '▁with', '▁background', '▁history', '▁of', '▁fe', 'ver', ',', '▁back', 'ache', ',', '▁skin', '▁r', 'ash', ',', '▁spl', 'en', 'om', 'eg', 'aly', '▁and', '▁a', '▁low', '▁plate', 'let', '▁count', '▁possibility', '▁of', '▁at', 'yp', 'ical', '▁in', 'fection', '▁like', '▁Bru', 'cell', 'osis', '▁with', '▁NS', 'A', 'ID', '▁induced', '▁gi', '▁ble', 'ed', '▁was', '▁considered', '.']
+The immunological tests such as antinuclear antibodies (ANA), anti-LKM1, anti-mitochondria and anti-smooth muscle antibodies were negatives.
+[('▁The', 'O', 'O'), 
+('▁imm', 'O', 'O'), ('un', 'O', 'O'), ('ological', 'O', 'O'), 
+('▁tests', 'B', 'B'), 
+('▁such', 'O', 'O'), 
+('▁as', 'O', 'O'), 
+('▁ant', 'O', 'O'), ('in', 'O', 'O'), ('uc', 'O', 'O'), ('lear', 'I', 'O'), 
+('▁ant', 'O', 'O'), ('ib', 'I', 'O'), ('od', 'O', 'O'), ('ies', 'I', 'O'), 
+('▁(', 'B', 'O'), ('AN', 'I', 'O'), ('A', 'I', 'O'), ('),', 'I', 'O'), 
+('▁anti', 'O', 'O'), ('-', 'O', 'O'), ('L', 'O', 'O'), ('K', 'O', 'O'), ('M', 'O', 'O'), ('1', 'O', 'O'), (',', 'O', 'O'), 
+('▁anti', 'O', 'O'), ('-', 'O', 'O'), ('m', 'O', 'O'), ('ito', 'O', 'O'), ('ch', 'O', 'O'), ('ond', 'O', 'O'), ('ria', 'O', 'O'), 
+('▁and', 'O', 'O'), 
+('▁anti', 'O', 'O'), ('-', 'O', 'O'), ('sm', 'O', 'O'), ('ooth', 'O', 'O'), 
+('▁mus', 'O', 'O'), ('cle', 'O', 'O'), 
+('▁ant', 'O', 'O'), ('ib', 'O', 'O'), ('od', 'I', 'O'), ('ies', 'O', 'O'), 
+('▁were', 'O', 'O'), 
+('▁neg', 'B', 'O'), ('atives', 'I', 'O'), ('.', 'O', 'O')]
