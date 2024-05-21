@@ -17,12 +17,14 @@ from utils import DataPreprocessor
 from utils.data_format_converter import DatasetFormatConverter
 from src.billm.modeling_llamabillm import LlamaForTokenClassification
 
-
+from huggingface_hub import login
 
 WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
 BASE_MODEL_CHECKPOINT = 'meta-llama/Llama-2-7b-chat-hf'
 LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
+HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
+login(token=HF_TOKEN_WRITE)
 use_e3c = True
 
 
