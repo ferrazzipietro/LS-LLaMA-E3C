@@ -47,46 +47,65 @@ seqeval = evaluate.load("seqeval")
 if use_e3c:
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
-    preprocessor = DataPreprocessor()
-    dataset = load_dataset(DATASET_CHEKPOINT, token = HF_TOKEN_WRITE) #download_mode="force_redownload"
-    dataset = dataset[TRAIN_LAYER]
-    dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-    dataset_format_converter = DatasetFormatConverter(dataset)
-    dataset_format_converter.apply()
+    # preprocessor = DataPreprocessor()
+    # dataset = load_dataset(DATASET_CHEKPOINT, token = HF_TOKEN_WRITE) #download_mode="force_redownload"
+    # dataset = dataset[TRAIN_LAYER]
+    # dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
+    # dataset_format_converter = DatasetFormatConverter(dataset)
+    # dataset_format_converter.apply()
 
-    ds = dataset_format_converter.dataset
-    #ds = ds.rename_column("word_level_labels", "ner_tags")
-    #ds = ds.rename_column("words", "tokens")
-    label2id = dataset_format_converter.label2id
-    id2label = {v: k for k, v in label2id.items()}
-    label_list = list(label2id.keys())
+    # ds = dataset_format_converter.dataset
+    # #ds = ds.rename_column("word_level_labels", "ner_tags")
+    # #ds = ds.rename_column("words", "tokens")
+    # label2id = dataset_format_converter.label2id
+    # id2label = {v: k for k, v in label2id.items()}
+    # label_list = list(label2id.keys())
 
-def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
+# def tokenize_and_align_labels(examples):
+#     tokenized_inputs = tokenizer(examples["tokens"], is_split_into_words=True, padding='longest', max_length=256, truncation=True)
 
-    labels = []
-    for i, label in enumerate(examples[f"ner_tags"]):
-        word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
-        previous_word_idx = None
-        label_ids = []
-        for word_idx in word_ids:  # Set the special tokens to -100.
-            if word_idx is None:
-                label_ids.append(-100)
-            elif word_idx != previous_word_idx:  # Only label the first token of a given word.
-                label_ids.append(label[word_idx])
-            else:
-                label_ids.append(-100)
-            previous_word_idx = word_idx
-        labels.append(label_ids)
+#     labels = []
+#     for i, label in enumerate(examples[f"ner_tags"]):
+#         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+#         previous_word_idx = None
+#         label_ids = []
+#         for word_idx in word_ids:  # Set the special tokens to -100.
+#             if word_idx is None:
+#                 label_ids.append(-100)
+#             elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+#                 label_ids.append(label[word_idx])
+#             else:
+#                 label_ids.append(-100)
+#             previous_word_idx = word_idx
+#         labels.append(label_ids)
 
-    tokenized_inputs["labels"] = labels
-    return tokenized_inputs
+#     tokenized_inputs["labels"] = labels
+#     return tokenized_inputs
 
-tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+# tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+
+
+preprocessor = DataPreprocessor()
+dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+dataset = dataset[TRAIN_LAYER]
+dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
+dataset_format_converter_obj = DatasetFormatConverter(dataset)
+dataset_format_converter_obj.apply()
+ds = dataset_format_converter_obj.dataset
+label2id = dataset_format_converter_obj.label2id
+id2label = dataset_format_converter_obj.get_id2label()
+label_list = dataset_format_converter_obj.get_label_list()
+dataset_format_converter_obj.set_tokenizer(tokenizer)
+dataset_format_converter_obj.set_max_seq_length(128)
+tokenized_ds = ds.map(lambda x: dataset_format_converter_obj.tokenize_and_align_labels(x), batched=True)# 
+train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+
+
+
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
-if use_e3c:
-    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+# if use_e3c:
+#     train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit= True,# model_loading_params.load_in_4bit,
