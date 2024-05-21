@@ -30,7 +30,7 @@ use_e3c = True
 
 # os.environ["TOKENIZERS_PARALLELISM"] = "false"
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,
-                                          token =LLAMA_TOKEN)
+                                          token =HF_TOKEN_WRITE)
 tokenizer.pad_token = tokenizer.eos_token
 seqeval = evaluate.load("seqeval")
 
@@ -48,7 +48,7 @@ if use_e3c:
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
     preprocessor = DataPreprocessor()
-    dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+    dataset = load_dataset(DATASET_CHEKPOINT, token = HF_TOKEN_WRITE) #download_mode="force_redownload"
     dataset = dataset[TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
     dataset_format_converter = DatasetFormatConverter(dataset)
@@ -106,7 +106,7 @@ model = LlamaForTokenClassification.from_pretrained(
     num_labels=len(label2id), 
     id2label=id2label, 
     label2id=label2id,
-    token = LLAMA_TOKEN,
+    token  = HF_TOKEN_WRITE,
     quantization_config=bnb_config,    
     device_map = 'auto',
     cache_dir='/data/disk1/share/pferrazzi/.cache'
@@ -169,7 +169,7 @@ training_args = TrainingArguments(
     save_strategy="epoch",
     #load_best_model_at_end=True,
     push_to_hub=True,
-    hub_token=HF_TOKEN,
+    hub_token=HF_TOKEN_WRITE,
     hub_model_id='ls_llama_e3c',
     report_to="wandb",
 )
@@ -187,7 +187,7 @@ trainer = Trainer(
 
 trainer.train()
 
-trainer.model.save_pretrained("ls_llama_e3c_locale") # save locally
+# trainer.model.save_pretrained("ls_llama_e3c_locale") # save locally
 # trainer.model.push_to_hub('ls_llama_e3c',  token=HF_TOKEN) #config.ADAPTERS_CHECKPOINT, token=HF_TOKEN)
 wandb.finish()
 
@@ -208,7 +208,7 @@ base_model_reload = LlamaForTokenClassification.from_pretrained(
     )# .bfloat16()
 
 
-merged_model = PeftModel.from_pretrained(base_model_reload, "ls_llama_e3c_locale", token=HF_TOKEN)
+merged_model = PeftModel.from_pretrained(base_model_reload, "ls_llama_e3c_locale", token=HF_TOKEN_WRITE)
 merged_model = merged_model.merge_and_unload()
 
 
@@ -219,5 +219,5 @@ tokenizer.padding_side = "right"
 
 
 # Push the model and tokenizer to the Hugging Face Model Hub
-merged_model.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN )
-tokenizer.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN )
+merged_model.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
+tokenizer.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
