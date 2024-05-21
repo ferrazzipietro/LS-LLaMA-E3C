@@ -13,8 +13,9 @@ import datetime
 import os
 import torch
 
-from utils import DataPreprocessor, DatasetFormatConverter
-from src.billm.modeling_llama import LlamaForTokenClassification
+from utils import DataPreprocessor
+from utils.data_format_converter import DatasetFormatConverter
+from src.billm.modeling_llamabillm import LlamaForTokenClassification
 
 
 
@@ -44,25 +45,16 @@ seqeval = evaluate.load("seqeval")
 if use_e3c:
     DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
     TRAIN_LAYER="en.layer1"
-    offset=False
-    instruction_on_response_format='Extract the entities contained in the text. Extract only entities contained in the text.\nReturn the result in a json format: [{"entity":"entity_name"}].'# 'Return the result in a json format.'
-    simplest_prompt=False
-    dataset_text_field="prompt"
-    preprocessor = DataPreprocessor(BASE_MODEL_CHECKPOINT, 
-                                    tokenizer)
+    preprocessor = DataPreprocessor()
     dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-    dataset = preprocessor.preprocess_data_one_layer(dataset, 
-                                                    instruction_on_response_format=instruction_on_response_format,
-                                                    simplest_prompt=simplest_prompt)
-    dataset = dataset.map(lambda samples: tokenizer(samples[dataset_text_field]), batched=True)
     dataset_format_converter = DatasetFormatConverter(dataset)
     dataset_format_converter.apply()
 
     ds = dataset_format_converter.dataset
-    ds = ds.rename_column("word_level_labels", "ner_tags")
-    ds = ds.rename_column("words", "tokens")
+    #ds = ds.rename_column("word_level_labels", "ner_tags")
+    #ds = ds.rename_column("words", "tokens")
     label2id = dataset_format_converter.label2id
     id2label = {v: k for k, v in label2id.items()}
     label_list = list(label2id.keys())
@@ -88,7 +80,11 @@ def tokenize_and_align_labels(examples):
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
 
+tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
+data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
+if use_e3c:
+    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit= True,# model_loading_params.load_in_4bit,
@@ -111,7 +107,7 @@ model = LlamaForTokenClassification.from_pretrained(
     token = LLAMA_TOKEN,
     quantization_config=bnb_config,    
     device_map = 'auto',
-    # cache_dir='/data/disk1/share/pferrazzi/.cache'
+    cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, 
@@ -123,11 +119,7 @@ model = get_peft_model(model, peft_config)
 model.print_trainable_parameters()
 
 
-tokenized_ds = ds.map(tokenize_and_align_labels, batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
-if use_e3c:
-    train_data, val_data, test_data = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
 
 
 wandb.login(key = WANDB_KEY)
