@@ -24,7 +24,7 @@ from utils import data_format_converter
 # importlib.reload(dataset_format_converter)
 
 #from src.billm import MistralForTokenClassification
-from src.billm import UnmaskingLlamaForTokenClassification
+from src.billm.modeling_llamabillm import LlamaForTokenClassification
 
 
 from config.finetuning_llama2 import training_params, lora_params, model_loading_params, config, preprocessing_params
@@ -83,7 +83,7 @@ def main(ADAPTERS_CHECKPOINT,
                             'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
 
     if not model_loading_params.quantization:
-        model = UnmaskingLlamaForTokenClassification.from_pretrained(
+        model = LlamaForTokenClassification.from_pretrained(
         config.BASE_MODEL_CHECKPOINT,
         num_labels=len(label2id), 
         id2label=id2label, 
