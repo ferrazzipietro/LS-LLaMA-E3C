@@ -109,7 +109,7 @@ model = LlamaForTokenClassification.from_pretrained(
     token  = HF_TOKEN_WRITE,
     quantization_config=bnb_config,    
     device_map = 'auto',
-    cache_dir='/data/disk1/share/pferrazzi/.cache'
+    # cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, 
