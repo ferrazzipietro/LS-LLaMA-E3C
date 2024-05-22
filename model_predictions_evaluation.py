@@ -14,8 +14,8 @@ login(token=HF_TOKEN_WRITE)
 
 
 appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training ='noLora_llama_3EpochsLast'
-training_type = 'NoLora' # ''
+log_name_training ='un_llama_3EpochsLast'
+training_type = 'unmasked'#'NoLora' # ''
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
     if training_type == 'NoLora':
@@ -50,7 +50,7 @@ for i, dataset_checkpoint in enumerate(datasets_list):
     print(f"evaluating {dataset_checkpoint}, {i}/{len(datasets_list)}...")
     test_data = load_dataset(dataset_checkpoint, token=HF_TOKEN, split='test')
     eval = Evaluator(test_data, tokenizer)
-    eval.extract_FP_FN_TP_token_by_token()
+    eval.extract_FP_FN_TP_TN_token_by_token()
     eval.create_evaluation_table()
     tmp = eval.evaluation_table.copy()
     tmp['dataset'] = dataset_checkpoint

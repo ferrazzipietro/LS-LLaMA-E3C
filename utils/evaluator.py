@@ -82,11 +82,11 @@ class Evaluator():
         TP = tmp_data['TP'].sum()
         FP = tmp_data['FP'].sum()
         FN = tmp_data['FN'].sum()
-        TN = tmp_data['TN'].sum()
+        # TN = tmp_data['TN'].sum()
         precision = TP / (TP + FP)
         recall = TP / (TP + FN)
         f1 = 2 * (precision * recall) / (precision + recall)
-        self.evaluation_table = {'TP': TP, 'FP': FP, 'FN': FN, 'TN': TN,
+        self.evaluation_table = {'TP': TP, 'FP': FP, 'FN': FN, #'TN': TN,
                                   'precision':precision, 'recall':recall, 'f1':f1}
         
         return self.evaluation_table

@@ -81,7 +81,7 @@ if training_type != 'NoLora':
         token = HF_TOKEN_WRITE,
         # cache_dir='/data/disk1/share/pferrazzi/.cache',
         device_map='auto',
-        torch_dtype=torch.bfloat16,
+        torch_dtype=torch.float16,
         # quantization_config = bnb_config
         )
 print('LOADING MODEL...DONE')
