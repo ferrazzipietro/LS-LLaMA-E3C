@@ -173,3 +173,4 @@ training_output/
 training_output
 train_ls_llama.err
 train_ls_llama.out
+.Rhistory

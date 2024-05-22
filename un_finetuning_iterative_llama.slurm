@@ -1,13 +1,13 @@
 #!/bin/bash -l
 ### job name
-#SBATCH --job-name=unmasked_ls_llama_finetuning_iterative
+#SBATCH --job-name=un_finetuning_iterative_llama
 
 ### 
 #SBATCH --mail-user=ferrazzi@math.unipd.it
 
 ### Standard output and standard error for our job
-#SBATCH --error=finetuning_iterative_llama_unmasked.err
-#SBATCH --output=finetuning_iterative_llama_unmasked.out
+#SBATCH --error=un_finetuning_iterative_llama.err
+#SBATCH --output=un_finetuning_iterative_llama.out
 
 ### queue/partition choosed
 #SBATCH --partition=testing
@@ -42,6 +42,6 @@ which python
 export 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256'
 
 python --version
-python  finetuning_iterative_llama_unmasked.py
+python  un_finetuning_iterative_llama.py
 echo -n 'Date: '
 date
