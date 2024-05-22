@@ -2,15 +2,12 @@
 library(ggplot2)
 library(tidyverse)
 
-data <- read.csv("/Users/pietroferrazzi/Desktop/dottorato/mistral_finetuning/data/evaluation_results/joint_results.csv") #"/Users/pietroferrazzi/Desktop/dottorato/mistral_finetuning/data/evaluation_results/joint_result.csv" 
+data <- read.csv("./data/evaluation_table5Epochs.csv") #"/Users/pietroferrazzi/Desktop/dottorato/mistral_finetuning/data/evaluation_results/joint_result.csv" 
 
 library(writexl)
 
-# Assuming your tibble is named "your_tibble" and the file name you want to save is "output.xlsx"
-write_xlsx(data, "/Users/pietroferrazzi/Desktop/dottorato/mistral_finetuning/output.xlsx")
-
 data %>% head(1)
-
+data%>% summary
 plot_results <- function(res, col_name, model_type) {
   ggplot(res, aes_string(x = col_name, y = "f1")) +
     # aes(group = col_name)
@@ -20,19 +17,20 @@ plot_results <- function(res, col_name, model_type) {
 }
 
 plot_boxplots <- function(data, col_name, model_type) {
-  ggplot(data, aes_string(x = col_name, y = "f1_score", group=col_name)) +
+  ggplot(data, aes_string(x = col_name, y = "f1", group=col_name)) +
     geom_boxplot(fill = "skyblue") +
     labs(title = paste("Box plot of F1 Score by", col_name, "  | ", model_type), y = "F1 Score") +
     theme_minimal()
 }
 
+plot_boxplots(data, 'r', '')
+
 show_results_grouped_finetuning <- function(data,
                                             f1_minimum_threshold=0){
-  cols <- c('maxNewTokensFactor', 'nShotsInference', 'quantization', 'r', 'lora_alpha', 'lora_dropout', 'gradient_accumulation_steps', 'learning_rate')
-  data <- data %>% 
-    filter(fine_tuning == 'FT',
-      !is.na(data['f1_score']),
-      f1_score > f1_minimum_threshold
+  cols <- c('r', 'lora_alpha', 'lora_dropout', 'gradient_accumulation_steps', 'learning_rate')
+  data <- data %>%
+    filter(
+      f1 > f1_minimum_threshold
     )
   for (i in 1:length(cols)){
     print(cols[i])
@@ -56,18 +54,27 @@ show_results_grouped_finetuning <- function(data,
   }
 }
 
-show_results_grouped_finetuning(data %>% filter(model_type=='mistral'),
-                                f1_minimum_threshold=0.3) 
+data%>% filter(gradient_accumulation_steps==8) 
+
+ggplot(data, aes_string(x = 'gradient_accumulation_steps', y = "f1", group='gradient_accumulation_steps')) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = paste("Box plot of F1 Score by", 'gradient_accumulation_steps', "  | "), y = "F1 Score") +
+  theme_minimal()
+
+
+
+show_results_grouped_finetuning(data,
+                                f1_minimum_threshold=0) 
   
 data %>% filter(model_type=='mistral') %>%
   group_by(quantization) %>%
-  summarise( f1_top = max(f1_score)) %>%
+  summarise( f1_top = max(f1)) %>%
   select(quantization, f1_top)%>%
   arrange(desc(f1_top))
 
 data %>% filter(model_type=='llama') %>%
-  arrange(desc(f1_score)) %>% 
-  select (quantization, f1_score, precision, recall) %>% 
+  arrange(desc(f1)) %>% 
+  select (quantization, f1, precision, recall) %>% 
   head(5)
 
 data %>% head(3)
@@ -81,9 +88,9 @@ library(xlsx)
 
 data %>%
   group_by(model_type, model_size, quantization, fine_tuning) %>%
-  top_n(1, f1_score) %>%
-  arrange(desc(f1_score)) %>%
-  select(model_type, model_size, quantization, fine_tuning, f1_score, recall, precision, nShotsInference) %>%
+  top_n(1, f1) %>%
+  arrange(desc(f1)) %>%
+  select( f1, recall, precision, nShotsInference) %>%
   filter(model_type=='mistral',
          #model_size=='13B'
          ) #%>%
