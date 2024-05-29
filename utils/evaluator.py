@@ -25,7 +25,7 @@ class Evaluator():
         TP, FP, FN = 0, 0, 0
         # labels = ['O'] + labels[:-1] 
         for pred, lab in zip(predictions, labels):
-            TP = TP + (1 if pred == lab and lab!='O' else 0)
+            TP = TP + (1 if (pred == lab and lab!='O') or (pred != 'O' and lab != 'O') else 0)
             FP = FP + (1 if pred != lab and lab =='O' else 0)
             FN = FN + (1 if pred != lab and pred =='O' else 0)
         TN = len(predictions) - (TP + FP + FN) 

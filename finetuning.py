@@ -128,7 +128,7 @@ model = LlamaForTokenClassification.from_pretrained(
     token  = HF_TOKEN_WRITE,
     # quantization_config=bnb_config,    
     device_map = 'auto',
-    # cache_dir='/data/disk1/share/pferrazzi/.cache'
+    cache_dir='/data/disk1/share/pferrazzi/.cache'
     )
 
 peft_config = LoraConfig(task_type=TaskType.TOKEN_CLS, 
@@ -214,29 +214,29 @@ import torch
 del model, trainer
 torch.cuda.empty_cache()
 
-# Reload the base model
-base_model_reload = LlamaForTokenClassification.from_pretrained(
-    BASE_MODEL_CHECKPOINT, 
-    num_labels=len(label2id), 
-    id2label=id2label, 
-    label2id=label2id,
-    token = LLAMA_TOKEN,
-    load_in_4bit=True,
-    device_map = 'auto',
-    # cache_dir='/data/disk1/share/pferrazzi/.cache'
-    )# .bfloat16()
+# # Reload the base model
+# base_model_reload = LlamaForTokenClassification.from_pretrained(
+#     BASE_MODEL_CHECKPOINT, 
+#     num_labels=len(label2id), 
+#     id2label=id2label, 
+#     label2id=label2id,
+#     token = LLAMA_TOKEN,
+#     load_in_4bit=True,
+#     device_map = 'auto',
+#     # cache_dir='/data/disk1/share/pferrazzi/.cache'
+#     )# .bfloat16()
 
 
-merged_model = PeftModel.from_pretrained(base_model_reload, "ls_llama_e3c_locale", token=HF_TOKEN_WRITE)
-merged_model = merged_model.merge_and_unload()
+# merged_model = PeftModel.from_pretrained(base_model_reload, "ls_llama_e3c_locale", token=HF_TOKEN_WRITE)
+# merged_model = merged_model.merge_and_unload()
+# 
+# 
+# # Reload tokenizer
+# tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT, trust_remote_code=True)
+# tokenizer.pad_token = tokenizer.eos_token
+# tokenizer.padding_side = "right"
 
 
-# Reload tokenizer
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT, trust_remote_code=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.padding_side = "right"
-
-
-# Push the model and tokenizer to the Hugging Face Model Hub
-merged_model.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
-tokenizer.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
+# # Push the model and tokenizer to the Hugging Face Model Hub
+# merged_model.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
+# tokenizer.push_to_hub("ferrazzipietro/ls_llama_e3c_model", use_temp_dir=False, token=HF_TOKEN_WRITE )
