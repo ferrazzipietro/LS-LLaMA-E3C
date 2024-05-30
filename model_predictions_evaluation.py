@@ -60,5 +60,5 @@ for i, dataset_checkpoint in enumerate(datasets_list):
 print(evaluation_table)
 evaluation_table#.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
 evaluation_table = extract_params_from_file_name(evaluation_table, training_type=training_type)
-evaluation_table.to_csv(f'data/bfloat_evaluation_table{training_type}_{appendix}.csv', index=False)
-print(f'SAVED TO data/bfloat_evaluation_table{training_type}_{appendix}.csv')
+evaluation_table.to_csv(f'data/evaluation_table{training_type}_{appendix}.csv', index=False)
+print(f'SAVED TO data/evaluation_table{training_type}_{appendix}.csv')
