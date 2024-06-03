@@ -40,7 +40,7 @@ torch.cuda.empty_cache()
 print('PREPROCESSING DATA...')
 DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
 TRAIN_LAYER="en.layer1"
-adapters_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type, dtype=dtype)
+adapters_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type)
 if training_type != 'NoLora':
     peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
     BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
@@ -106,6 +106,9 @@ for adapters in adapters_list:
     test_data = generator.generate(data, batch_size = batch_size)
     if dtype==torch.bfloat16:
         adapters = adapters+'_bf'
+        print('SSSSSSAVINGGGGGGG in bf16')
+    else:
+        print('NOooooooooooooo in fp16')
     test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
     print('GENERATING:', adapters, '...DONE')
     del model
