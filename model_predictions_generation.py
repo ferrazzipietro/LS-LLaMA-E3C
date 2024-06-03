@@ -15,12 +15,12 @@ from utils.data_format_converter import  DatasetFormatConverter
 from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
-batch_size = 48 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
-appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training = "llama_3EpochsLast_cl" # "llama_3EpochsLast"
+batch_size = 24 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
+appendix = '6Epochs' # '5EpochsBestF1Train' # 5EpochsBestF1Train
+log_name_training = "6Epochs" # "llama_3EpochsLast"
 clent = True
 training_type= ''#'NoLora' # 'unmasked'
-dtype = torch.bfloat16
+dtype = torch.float16
 
 
 if training_type == 'NoLora':
@@ -108,7 +108,7 @@ for adapters in adapters_list:
         adapters = adapters+'_bf'
         print('SSSSSSAVINGGGGGGG in bf16')
     else:
-        print('NOooooooooooooo in fp16')
+        print('NOooooo in bf16')
     test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
     print('GENERATING:', adapters, '...DONE')
     del model
