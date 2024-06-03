@@ -14,7 +14,7 @@ login(token=HF_TOKEN_WRITE)
 
 
 appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training ='llama_3EpochsLast'
+log_name_training ='llama_3EpochsLast_cl'
 training_type = ''#'NoLora' # 'unmasked'
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
@@ -60,5 +60,5 @@ for i, dataset_checkpoint in enumerate(datasets_list):
 print(evaluation_table)
 evaluation_table#.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
 evaluation_table = extract_params_from_file_name(evaluation_table, training_type=training_type)
-evaluation_table.to_csv(f'data/evaluation_table{training_type}_{appendix}.csv', index=False)
+evaluation_table.to_csv(f'data/evaluation_table{training_type}_{log_name_training}.csv', index=False)
 print(f'SAVED TO data/evaluation_table{training_type}_{appendix}.csv')

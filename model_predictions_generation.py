@@ -81,7 +81,7 @@ if training_type != 'NoLora':
         token = HF_TOKEN_WRITE,
         # cache_dir='/data/disk1/share/pferrazzi/.cache',
         device_map='auto',
-        # torch_dtype=torch.float16,
+        torch_dtype=torch.bfloat16,
         # quantization_config = bnb_config
         )
 print('LOADING MODEL...DONE')
@@ -99,6 +99,7 @@ for adapters in adapters_list:
                 adapters,
                 num_labels=len(label2id), id2label=id2label, label2id=label2id,
                 token = HF_TOKEN_WRITE,
+                torch_dtype=torch.bfloat16,
                 device_map='auto')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
     test_data = generator.generate(data, batch_size = batch_size)
