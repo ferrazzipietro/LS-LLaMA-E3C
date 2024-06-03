@@ -16,6 +16,8 @@ login(token=HF_TOKEN_WRITE)
 appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training ='llama_3EpochsLast_cl'
 training_type = ''#'NoLora' # 'unmasked'
+dtype = torch.bfloat16
+
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
     if training_type == 'NoLora':
@@ -39,7 +41,8 @@ def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
         df['run_type'] = df['dataset'].apply(lambda x: str(x.split('/')[1].split('_')[10]))
     return df
 
-datasets_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type)
+datasets_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type,
+                                       dtype=dtype)
 peft_config = PeftConfig.from_pretrained(datasets_list[0], token = HF_TOKEN_WRITE)
 BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
