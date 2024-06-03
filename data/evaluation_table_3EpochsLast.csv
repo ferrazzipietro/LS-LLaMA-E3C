@@ -1,0 +1,2 @@
+dataset,TP,FP,FN,precision,recall,f1,model_type,training_config,layer,quantization,r,lora_alpha,lora_dropout,gradient_accumulation_steps,learning_rate,run_type
+ferrazzipietro/LS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_16_32_0.05_8_0.0002_3EpochsLast_clent,1395,1231,825,0.5312261995430312,0.6283783783783784,0.5757325629385059,Llama-2-7b-hf,en.layer1_NoQuant_16_32_0.05_8_0.0002_3EpochsLast_clent,en.layer1,NoQuant,16,32,0.05,8,0.0002,3EpochsLast
