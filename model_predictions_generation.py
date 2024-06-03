@@ -61,7 +61,7 @@ preprocessor = DataPreprocessor()
 _, data, _ = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
 print('PREPROCESSING DATA...DONE')
 
-
+print(data[0:10])
 
 
 
@@ -87,7 +87,7 @@ if training_type != 'NoLora':
 print('LOADING MODEL...DONE')
 
 print(adapters_list)
-for adapters in adapters_list[2:]:
+for adapters in adapters_list:
     print('GENERATING:', adapters, '...')
     if training_type != 'NoLora':
         peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE)
