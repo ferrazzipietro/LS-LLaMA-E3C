@@ -16,7 +16,7 @@ login(token=HF_TOKEN_WRITE)
 appendix = '3EpochsLast'# '5EpochsBestF1Train' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training ='llama_3EpochsLast_cl'
 training_type = ''#'NoLora' # 'unmasked'
-dtype = torch.bfloat16
+dtype = torch.float16
 
 
 def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
@@ -43,13 +43,14 @@ def extract_params_from_file_name(df: pd.DataFrame, training_type:str=''):
 
 datasets_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type,
                                        dtype=dtype)
-peft_config = PeftConfig.from_pretrained(datasets_list[0], token = HF_TOKEN_WRITE)
+peft_config = PeftConfig.from_pretrained(datasets_list[0].replace('_bf', ''), token = HF_TOKEN_WRITE)
 BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
 
 evaluation_table = pd.DataFrame(columns=['dataset', 'TP', 'FP', 'FN', 'precision', 'recall', 'f1'])
 
 for i, dataset_checkpoint in enumerate(datasets_list):
+    dataset_checkpoint = dataset_checkpoint #+ ('_bf' if dtype == torch.bfloat16 else '')
     print(f"evaluating {dataset_checkpoint}, {i}/{len(datasets_list)}...")
     test_data = load_dataset(dataset_checkpoint, token=HF_TOKEN, split='test')
     eval = Evaluator(test_data, tokenizer)
@@ -64,4 +65,4 @@ print(evaluation_table)
 evaluation_table#.to_csv(f'data/evaluation_table{appendix}.csv', index=False)
 evaluation_table = extract_params_from_file_name(evaluation_table, training_type=training_type)
 evaluation_table.to_csv(f'data/evaluation_table{training_type}_{log_name_training}.csv', index=False)
-print(f'SAVED TO data/evaluation_table{training_type}_{appendix}.csv')
+print(f'SAVED TO data/evaluation_table{training_type}_{log_name_training}.csv')

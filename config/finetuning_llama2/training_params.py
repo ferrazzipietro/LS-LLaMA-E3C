@@ -1,9 +1,9 @@
 
-appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
+appendix = '6Epochs' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 ### TrainingArguments
-num_train_epochs= 3
-per_device_train_batch_size= 8
-gradient_accumulation_steps= [2,4,8] # reduce the number to finish faster
+num_train_epochs= 6
+per_device_train_batch_size= 16
+gradient_accumulation_steps= [1]#[2,4,8] # reduce the number to finish faster
 optim = "paged_adamw_8bit"
 learning_rate= [2e-4]
 weight_decay= 0.001
@@ -24,7 +24,7 @@ eval_steps=save_steps
 greater_is_better=False
 metric_for_best_model="loss"
 save_total_limit = 1
-load_best_model_at_end = False#True
+load_best_model_at_end = True#True
 
 ### SFTTrainer
 """
