@@ -17,7 +17,7 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 batch_size = 24 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
 appendix = '6Epochs' # '5EpochsBestF1Train' # 5EpochsBestF1Train
-log_name_training = "6Epochs" # "llama_3EpochsLast"
+log_name_training = "llama_6Epochs" # "llama_3EpochsLast"
 clent = True
 training_type= ''#'NoLora' # 'unmasked'
 dtype = torch.float16
