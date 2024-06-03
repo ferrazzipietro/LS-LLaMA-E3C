@@ -18,7 +18,7 @@ from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 batch_size = 32 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
 appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_3EpochsLast" # "llama_3EpochsLast"
-
+clent = True
 training_type= ''#'NoLora' # 'unmasked'
 
 
@@ -48,7 +48,7 @@ tokenizer.pad_token = tokenizer.eos_token
 dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
 dataset = dataset[TRAIN_LAYER]
 dataset = dataset.shuffle(seed=1234)  
-dataset_format_converter = DatasetFormatConverter(dataset)
+dataset_format_converter = DatasetFormatConverter(dataset, clent=clent)
 dataset_format_converter.apply()
 ds = dataset_format_converter.dataset
 label2id = dataset_format_converter.label2id
