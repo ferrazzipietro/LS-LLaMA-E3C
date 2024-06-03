@@ -20,6 +20,7 @@ appendix = '3EpochsLast' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_3EpochsLast_cl" # "llama_3EpochsLast"
 clent = True
 training_type= ''#'NoLora' # 'unmasked'
+dtype = torch.bfloat16
 
 
 if training_type == 'NoLora':
@@ -81,7 +82,7 @@ if training_type != 'NoLora':
         token = HF_TOKEN_WRITE,
         # cache_dir='/data/disk1/share/pferrazzi/.cache',
         device_map='auto',
-        torch_dtype=torch.bfloat16,
+        torch_dtype=dtype,
         # quantization_config = bnb_config
         )
 print('LOADING MODEL...DONE')
@@ -99,11 +100,13 @@ for adapters in adapters_list:
                 adapters,
                 num_labels=len(label2id), id2label=id2label, label2id=label2id,
                 token = HF_TOKEN_WRITE,
-                torch_dtype=torch.bfloat16,
+                torch_dtype=dtype,
                 device_map='auto')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
     test_data = generator.generate(data, batch_size = batch_size)
-    test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
+    if dtype==torch.bfloat16:
+        adapters = adapters+'_bf'
+    test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
     print('GENERATING:', adapters, '...DONE')
     del model
     gc.collect()
