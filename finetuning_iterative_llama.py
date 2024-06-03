@@ -222,7 +222,7 @@ if __name__ == "__main__":
     dataset = load_dataset(config.DATASET_CHEKPOINT) #download_mode="force_redownload"
     dataset = dataset[config.TRAIN_LAYER]
     dataset = dataset.shuffle(seed=1234)  # Shuffle dataset here
-    dataset_format_converter_obj = data_format_converter.DatasetFormatConverter(dataset)
+    dataset_format_converter_obj = data_format_converter.DatasetFormatConverter(dataset, clent=preprocessing_params.clent)
     dataset_format_converter_obj.apply()
     ds = dataset_format_converter_obj.dataset
     label2id = dataset_format_converter_obj.label2id
@@ -265,7 +265,13 @@ if __name__ == "__main__":
                             extra_str = "simplest_prompt_"
                         else:
                             extra_str = ""
-                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{training_params.appendix}"
+                        extra_str_cl = ""
+                        try:
+                            if preprocessing_params.clent:
+                                extra_str_cl += "_clent"
+                        except:
+                            pass
+                        ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{config.model_name}_{extra_str}adapters_{config.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{training_params.appendix}{extra_str_cl}"
                         main(ADAPTERS_CHECKPOINT,
                             # load_in_4bit, bnb_4bit_quant_type, bnb_4bit_compute_dtype, llm_int8_threshold,
                             r, lora_alpha, lora_dropout,

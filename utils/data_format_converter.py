@@ -1,11 +1,13 @@
 import string
 
+
 class DatasetFormatConverter():
     """
     """
-    def __init__(self, dataset):
+    def __init__(self, dataset, clent:bool=False):
         self.dataset = dataset
         self.label2id = { "O": 0, "B": 1, "I": 2}
+        self.clent = clent
 
     def get_id2label(self):
         id2label = {v: k for k, v in self.label2id.items()}
@@ -47,6 +49,13 @@ class DatasetFormatConverter():
         count_end = len(text) - len(text.rstrip(punctuation_to_remove))
         word_no_punct = text.strip(punctuation_to_remove)
         return word_no_punct, count_beginning, count_end
+    
+    def _only_clent_from_enities(self, example):
+        example['entities'] = [entity for entity in example['entities'] if entity['type'] == 'CLINENTITY']
+        return example
+    
+    def apply_only_clinentities(self):
+        self.dataset = self.dataset.map(self._only_clent_from_enities, num_proc=1)
 
     def _entities_from_dict_to_labels_list(self, example, word_level=True, token_level=False, tokenizer=None):
         if word_level and token_level:
@@ -87,6 +96,8 @@ class DatasetFormatConverter():
         return example
 
     def apply(self):
+        if self.clent:
+            self.apply_only_clinentities()
         self.dataset = self.dataset.map(self._entities_from_dict_to_labels_list)
         self.dataset = self.dataset.rename_column("word_level_labels", "ner_tags")
         self.dataset = self.dataset.rename_column("words", "tokens")

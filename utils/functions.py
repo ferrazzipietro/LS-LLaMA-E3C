@@ -40,11 +40,18 @@ def generate_adapters_list(log_run_name: str, appendix:str, training_type:str=''
                                 nbits = 8   
                             if not quantization:
                                 nbits = 'NoQuant'
+                            extra_str_cl = ""
+                            try:
+                                if models_params.clent:
+                                    extra_str_cl += "_clent"
+                            except:
+                                pass
+                       
                             if training_type == 'NoLora':
-                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/noLoraLS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
+                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/noLoraLS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{gradient_accumulation_steps}_{learning_rate}_{appendix}{extra_str_cl}"
                             elif training_type == 'unmasked':
-                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/unmaskedLS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
+                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/unmaskedLS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}{extra_str_cl}"
                             else:
-                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}"
+                                ADAPTERS_CHECKPOINT = f"ferrazzipietro/LS_{model_name}_adapters_{models_params.TRAIN_LAYER}_{nbits}_{r}_{lora_alpha}_{lora_dropout}_{gradient_accumulation_steps}_{learning_rate}_{appendix}{extra_str_cl}"
                             adapters_list.append(ADAPTERS_CHECKPOINT)
     return list(set(adapters_list))
