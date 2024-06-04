@@ -119,3 +119,6 @@ for adapters in adapters_list:
     # del model
     # gc.collect()
     # torch.cuda.empty_cache()
+
+
+print(test_data)
