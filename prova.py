@@ -84,8 +84,8 @@ if training_type != 'NoLora':
         num_labels=len(label2id), id2label=id2label, label2id=label2id,
         token = HF_TOKEN_WRITE,
         quantization_config = BitsAndBytesConfig(load_in_4bit=True, load_in_8bit=False),
-        cache_dir='/data/disk1/share/pferrazzi/.cache',
-        device_map='cuda:0',
+        #cache_dir='/data/disk1/share/pferrazzi/.cache',
+        device_map='auto',
         torch_dtype=dtype,
         # quantization_config = bnb_config
         )
@@ -96,9 +96,9 @@ print(adapters_list)
 for adapters in adapters_list:
     print('GENERATING:', adapters, '...')
     if training_type != 'NoLora':
-        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE, device_map='cuda:0')
+        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE, device_map='auto')
         BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-        model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE, device_map='cuda:0')
+        model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE, device_map='auto')
         model = model.merge_and_unload()
     else:
         model = ModelForTokenClassification.from_pretrained(
