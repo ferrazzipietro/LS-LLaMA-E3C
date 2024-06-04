@@ -21,7 +21,11 @@ class OutputGenerator():
 
     def _generate_batch(self, input_sentences):
         encodeds = self.tokenizer(input_sentences, return_tensors="pt", add_special_tokens=False, padding=True)
-        model_inputs = encodeds.to('cuda')
+        #model_inputs = encodeds.to('cuda:0')
+        model_inputs = {key: value.to('cuda:0') for key, value in encodeds.items()}
+    
+        # Print the device of one of the tensors to verify
+        print(f'model_inputs is on device: {next(iter(model_inputs.values())).device}')
         generated_ids = self.model(**model_inputs)
         # preds = self._create_prediction_list(generated_ids)
         return generated_ids
