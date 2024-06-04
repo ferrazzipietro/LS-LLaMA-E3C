@@ -121,4 +121,4 @@ for adapters in adapters_list:
     # torch.cuda.empty_cache()
 
 
-print(test_data)
+print(test_data[0], '\n\n\n', test_data[1], '\n\n\n', test_data[2], '\n\n\n', test_data[3])
