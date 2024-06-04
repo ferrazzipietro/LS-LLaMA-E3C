@@ -415,7 +415,7 @@ class LlamaForTokenClassification(LlamaPreTrainedModel):
             `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
         """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        print(f"DEVICES: \n{input_ids.device}\n{attention_mask.device}
+        print(f"DEVICES: \n{input_ids.device}\n{attention_mask.device}")
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
