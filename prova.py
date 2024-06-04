@@ -1,39 +1,57 @@
-import numpy as np
-import pandas as pd
-from datasets import load_dataset, Dataset
-from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
-from transformers.pipelines.pt_utils import KeyDataset
+
+import os 
+from huggingface_hub import login
+from datasets import load_dataset
+from transformers import AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel, PeftConfig
 from dotenv import dotenv_values
 import torch
 from tqdm.auto import tqdm
-import evaluate
+import gc
 
-from utils import DataPreprocessor, Evaluator, OutputGenerator
-from utils import data_format_converter
 
-from src.billm import LlamaForTokenClassification
+from utils import generate_adapters_list, OutputGenerator, DataPreprocessor
+from utils.data_format_converter import  DatasetFormatConverter
+from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
-WANDB_KEY = dotenv_values(".env.base")['WANDB_KEY']
-LLAMA_TOKEN = dotenv_values(".env.base")['LLAMA_TOKEN']
+
+batch_size = 24 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
+appendix = '6Epochs' # '5EpochsBestF1Train' # 5EpochsBestF1Train
+log_name_training = "llama_6Epochs" # "llama_3EpochsLast"
+clent = True
+training_type= ''#'NoLora' # 'unmasked'
+dtype = torch.float16
+
+
+if training_type == 'NoLora':
+    BASE_MODEL_CHECKPOINT = "meta-llama/Llama-2-7b-hf"
+else:
+    pass # it will be assigned based on the adapters
+
+
 HF_TOKEN = dotenv_values(".env.base")['HF_TOKEN']
 HF_TOKEN_WRITE = dotenv_values(".env.base")['HF_TOKEN_WRITE']
+login(token=HF_TOKEN_WRITE)
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+torch.cuda.empty_cache() 
 
 
-adapters = "ferrazzipietro/noLoraLS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_2_0.0002_5EpochsBestF1Train"# "ferrazzipietro/LS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_64_32_0.01_2_0.0002_5Epochs"
-peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN)
-BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
-
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN)
-tokenizer.pad_token = tokenizer.eos_token
-# seqeval = evaluate.load("seqeval")
+print('PREPROCESSING DATA...')
 DATASET_CHEKPOINT="ferrazzipietro/e3c-sentences" 
 TRAIN_LAYER="en.layer1"
-preprocessor = DataPreprocessor()
-dataset = load_dataset(DATASET_CHEKPOINT) #download_mode="force_redownload"
+## adapters_list = generate_adapters_list(log_name_training, appendix=appendix, training_type=training_type)
+adapters_list = ["ferrazzipietro/LS_Llama-2-7b-hf_adapters_en.layer1_NoQuant_32_64_0.01_1_0.0002_6Epochs_clent"]
+
+if training_type != 'NoLora':
+    peft_config = PeftConfig.from_pretrained(adapters_list[0], token = HF_TOKEN_WRITE)
+    BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_WRITE)
+tokenizer.pad_token = tokenizer.eos_token
+dataset = load_dataset(DATASET_CHEKPOINT, token=HF_TOKEN_WRITE) #download_mode="force_redownload"
 dataset = dataset[TRAIN_LAYER]
 dataset = dataset.shuffle(seed=1234)  
-dataset_format_converter = data_format_converter.DatasetFormatConverter(dataset)
+dataset_format_converter = DatasetFormatConverter(dataset, clent=clent)
 dataset_format_converter.apply()
 ds = dataset_format_converter.dataset
 label2id = dataset_format_converter.label2id
@@ -41,19 +59,63 @@ id2label = dataset_format_converter.get_id2label()
 label_list = dataset_format_converter.get_label_list()
 dataset_format_converter.set_tokenizer(tokenizer)
 dataset_format_converter.set_max_seq_length(256)
-tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)# dataset_format_converter.dataset.map(tokenize_and_align_labels, batched=True)
-_, val_data, _ = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+tokenized_ds = ds.map(lambda x: dataset_format_converter.tokenize_and_align_labels(x), batched=True)
+preprocessor = DataPreprocessor()
+_, data, _ = preprocessor.split_layer_into_train_val_test_(tokenized_ds, TRAIN_LAYER)
+print('PREPROCESSING DATA...DONE')
+
+print(data[0:10])
 
 
-model = LlamaForTokenClassification.from_pretrained(
-    peft_config.base_model_name_or_path,
-    num_labels=len(label2id), id2label=id2label, label2id=label2id,
-    token = HF_TOKEN,
-    # cache_dir='/data/disk1/share/pferrazzi/.cache',
-    device_map='auto')
-model = PeftModel.from_pretrained(model, adapters, token = HF_TOKEN)
-model = model.merge_and_unload()
 
-generator = OutputGenerator(model, tokenizer, label2id, label_list)
-test_data = generator.generate(val_data, batch_size = 84)
-test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE)
+print('LOADING MODEL...')
+model_type = 'llama' if 'llama' in BASE_MODEL_CHECKPOINT.lower() else 'mistral'
+if model_type == 'llama':
+    ModelForTokenClassification = LlamaForTokenClassification
+elif model_type == 'mistral':
+    ModelForTokenClassification = MistralForTokenClassification
+else:
+    raise ValueError('Model type not recognized')
+
+if training_type != 'NoLora':
+
+    base_model = ModelForTokenClassification.from_pretrained(
+        BASE_MODEL_CHECKPOINT,
+        num_labels=len(label2id), id2label=id2label, label2id=label2id,
+        token = HF_TOKEN_WRITE,
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True, load_in_8bit=False),
+        cache_dir='/data/disk1/share/pferrazzi/.cache',
+        device_map='cuda:0',
+        torch_dtype=dtype,
+        # quantization_config = bnb_config
+        )
+print('LOADING MODEL...DONE')
+
+
+print(adapters_list)
+for adapters in adapters_list:
+    print('GENERATING:', adapters, '...')
+    if training_type != 'NoLora':
+        peft_config = PeftConfig.from_pretrained(adapters, token = HF_TOKEN_WRITE, device_map='cuda:0')
+        BASE_MODEL_CHECKPOINT = peft_config.base_model_name_or_path
+        model = PeftModel.from_pretrained(base_model, adapters, token = HF_TOKEN_WRITE, device_map='cuda:0')
+        model = model.merge_and_unload()
+    else:
+        model = ModelForTokenClassification.from_pretrained(
+                adapters,
+                num_labels=len(label2id), id2label=id2label, label2id=label2id,
+                token = HF_TOKEN_WRITE,
+                torch_dtype=dtype,
+                device_map='auto')
+    generator = OutputGenerator(model, tokenizer, label2id, label_list)
+    test_data = generator.generate(data.select(range(4)), batch_size = 2)
+    # if dtype==torch.bfloat16:
+    #     adapters = adapters+'_bf'
+    #     print('SSSSSSAVINGGGGGGG in bf16')
+    # else:
+    #     print('NOooooo in bf16')
+    # test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
+    # print('GENERATING:', adapters, '...DONE')
+    # del model
+    # gc.collect()
+    # torch.cuda.empty_cache()
