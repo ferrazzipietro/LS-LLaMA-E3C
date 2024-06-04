@@ -15,7 +15,7 @@ from utils.data_format_converter import  DatasetFormatConverter
 from src.billm import LlamaForTokenClassification, MistralForTokenClassification
 
 
-batch_size = 24 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
+batch_size = 48 # '5EpochsBestF1Train' # 5EpochsBestF1Trainbatch_size = 64
 appendix = '6Epochs' # '5EpochsBestF1Train' # 5EpochsBestF1Train
 log_name_training = "llama_6Epochs" # "llama_3EpochsLast"
 clent = True
@@ -108,13 +108,9 @@ for adapters in adapters_list:
                 torch_dtype=dtype,
                 device_map='auto')
     generator = OutputGenerator(model, tokenizer, label2id, label_list)
-    test_data = generator.generate(data.select(range(4)), batch_size = 2)
-    # if dtype==torch.bfloat16:
-    #     adapters = adapters+'_bf'
-    #     print('SSSSSSAVINGGGGGGG in bf16')
-    # else:
-    #     print('NOooooo in bf16')
-    # test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
+    test_data = generator.generate(data, batch_size = batch_size)
+
+    test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
     # print('GENERATING:', adapters, '...DONE')
     # del model
     # gc.collect()
