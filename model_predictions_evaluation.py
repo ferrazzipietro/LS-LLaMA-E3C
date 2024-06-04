@@ -50,7 +50,7 @@ tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT,token =HF_TOKEN_
 evaluation_table = pd.DataFrame(columns=['dataset', 'TP', 'FP', 'FN', 'precision', 'recall', 'f1'])
 
 for i, dataset_checkpoint in enumerate(datasets_list):
-    dataset_checkpoint = dataset_checkpoint +'_bf' #+ ('_bf' if dtype == torch.bfloat16 else '')
+    dataset_checkpoint = dataset_checkpoint #+ ('_bf' if dtype == torch.bfloat16 else '')
     print(f"evaluating {dataset_checkpoint}, {i}/{len(datasets_list)}...")
     test_data = load_dataset(dataset_checkpoint, token=HF_TOKEN, split='test')
     eval = Evaluator(test_data, tokenizer)

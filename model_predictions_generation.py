@@ -109,7 +109,12 @@ for adapters in adapters_list:
         print('SSSSSSAVINGGGGGGG in bf16')
     else:
         print('NOooooo in bf16')
-    test_data.push_to_hub(adapters+'_bf', token=HF_TOKEN_WRITE, split='test')
+    test_data.push_to_hub(adapters, token=HF_TOKEN_WRITE, split='test')
+    for el in test_data['predictions']:
+        if any([x!='O' for x in el]):
+            print(el)
+        else:
+            print("THey are ALL O")
     print('GENERATING:', adapters, '...DONE')
     del model
     gc.collect()
